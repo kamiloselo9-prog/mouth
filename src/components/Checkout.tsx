@@ -366,14 +366,8 @@ export default function Checkout() {
                      {errors.delivery && <span className="text-red-500 text-xs mt-3 block font-medium">{errors.delivery}</span>}
 
                      {/* Official InPost Geowidget Rendering Inline */}
-                     <AnimatePresence>
-                       {isChoosingPoint && (
-                         <motion.div 
-                           initial={{ height: 0, opacity: 0 }}
-                           animate={{ height: 'auto', opacity: 1 }}
-                           exit={{ height: 0, opacity: 0 }}
-                           className="pt-6 mt-6 border-t border-[#EAE6DF]"
-                         >
+                     {isChoosingPoint && (
+                         <div className="pt-6 mt-6 border-t border-[#EAE6DF]">
                             <h3 className="font-semibold text-sm mb-4">Znajdź paczkomat w swojej okolicy:</h3>
                             
                             {/* Search Form */}
@@ -410,7 +404,7 @@ export default function Checkout() {
 
                             <div className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative">
                                <InpostGeowidget 
-                                 token={import.meta.env.VITE_INPOST_GEO_TOKEN} 
+                                 token={import.meta.env.VITE_INPOST_GEO_TOKEN || 'missing-token'} 
                                  onpoint="handleInpostPoint" 
                                  language="pl" 
                                  config="parcelCollect"
@@ -423,9 +417,8 @@ export default function Checkout() {
                             >
                               Anuluj wybór
                             </button>
-                         </motion.div>
+                         </div>
                        )}
-                     </AnimatePresence>
 
                    </div>
                  </motion.div>
