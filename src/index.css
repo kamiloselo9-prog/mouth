@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #F7F6F4;
+  --color-brand-primary: #1A1A1A;
+  --color-brand-secondary: #2C2C2C;
+  --color-brand-card: #FFFFFF;
+  --color-brand-subtle: #D6CFC4;
+  --color-brand-border: #E6E2DA;
+  --color-brand-muted: #737373;
+  --color-brand-accent: #D6CFC4;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Hide default scrollbar area for a cleaner look if needed, but we will custom style it */
+  }
+
+  body {
+    background-color: var(--color-brand-bg);
+    color: var(--color-brand-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom Scrollbar - Optimized */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #D6CFC4;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1A1A1A;
+  }
+}
+
+/* Base custom utilities for infinite marquee and micro-animations */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes breath {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-breath {
+  animation: breath 6s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.night-glow {
+  background: radial-gradient(circle, rgba(17, 24, 39, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.pause-on-hover:hover {
+  animation-play-state: paused;
+}
+
+/* Hiding scrollbar for horizontal sections */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
