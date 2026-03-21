@@ -43,7 +43,6 @@ export default function Checkout() {
   
   // Point selection state
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
-  const [isChoosingPoint, setIsChoosingPoint] = useState(false);
   
   // Geowidget API and Search state
   const [inpostApi, setInpostApi] = useState<any>(null);
@@ -51,6 +50,7 @@ export default function Checkout() {
   const [searchPostalCode, setSearchPostalCode] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
+  const [mapCoordinates, setMapCoordinates] = useState<{lat: number, lon: number} | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -60,10 +60,9 @@ export default function Checkout() {
       setSelectedPoint({
         name: point.name,
         address: `${point.address.line1}, ${point.address.line2}`,
-        city: point.address_details.city || point.address.line2.split(' ').pop() || '',
+        city: point.address_details?.city || point.address.line2.split(' ').pop() || '',
         code: point.name // The point name (e.g. WAW123M) is typically the machine code
       });
-      setIsChoosingPoint(false);
       setErrors(prev => ({ ...prev, delivery: '' })); // Clean up error
     };
 
@@ -80,6 +79,20 @@ export default function Checkout() {
       document.removeEventListener('inpost.geowidget.init', handleInit);
     };
   }, []);
+
+  // Update position if API and coords are ready
+  useEffect(() => {
+    if (inpostApi && mapCoordinates) {
+      // Use setTimeout to ensure DOM is fully ready or API has processed its internal map
+      setTimeout(() => {
+        try {
+          inpostApi.changePosition({ latitude: mapCoordinates.lat, longitude: mapCoordinates.lon }, 16);
+        } catch (err) {
+          console.warn('Geowidget API changePosition warn:', err);
+        }
+      }, 500);
+    }
+  }, [inpostApi, mapCoordinates]);
 
   const total = cartTotal + delivery.price;
 
@@ -104,7 +117,7 @@ export default function Checkout() {
     if (delivery.id === 'courier' && !/^\d{2}-\d{3}$/.test(formData.postalCode)) newErrors.postalCode = "Poprawny format: 00-000";
     if (delivery.id === 'courier' && !formData.city.trim()) newErrors.city = "Podaj miasto";
     
-    if (delivery.id === 'inpost' && !selectedPoint) newErrors.delivery = "Wybierz punkt odbioru, używając mapy";
+    if (delivery.id === 'inpost' && !selectedPoint) newErrors.delivery = "Musisz wyszukać i wybrać punkt odbioru InPost.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -141,7 +154,7 @@ export default function Checkout() {
         }
       } catch (err: any) {
          console.error(err);
-         alert(`Wystąpił błąd przy inicjowaniu płatności Stripe: ${err.message}`);
+         alert(`Wystąpił błąd przy inicjowaniu płatności: ${err.message}`);
          setIsSubmitting(false);
       }
     }
@@ -161,18 +174,14 @@ export default function Checkout() {
       
       if (data && data.length > 0) {
         const { lat, lon } = data[0];
-        if (inpostApi) {
-          inpostApi.changePosition({ latitude: parseFloat(lat), longitude: parseFloat(lon) }, 16);
-        } else {
-          // Fallback if API is not fully loaded somehow but user managed to click
-          setSearchError('Mapa ładuje się. Spróbuj kliknąć za chwilę.');
-        }
+        setMapCoordinates({ lat: parseFloat(lat), lon: parseFloat(lon) });
+        // The useEffect will trigger changePosition when widget loads
       } else {
-        setSearchError('Nie udało się znaleźć lokalizacji. Spróbuj ponownie.');
+        setSearchError('Nie udało się znaleźć tej lokalizacji. Sprawdź dane i spróbuj ponownie.');
       }
     } catch (err) {
       console.error('Błąd wyszukiwania:', err);
-      setSearchError('Wystąpił błąd podczas wyszukiwania. Spróbuj ponownie.');
+      setSearchError('Nie udało się znaleźć tej lokalizacji. Sprawdź dane i spróbuj ponownie.');
     } finally {
       setSearchLoading(false);
     }
@@ -214,8 +223,8 @@ export default function Checkout() {
           {/* SEKACJA: DANE KLIENTA */}
           <section>
             <div>
-              <h2 className="text-2xl font-light mb-2">Dane kontaktowe & Adres</h2>
-              <p className="text-[#737373] text-sm mb-6">Podaj dane potrzebne do realizacji zamówienia.</p>
+              <h2 className="text-2xl font-light mb-2">Dane kontaktowe</h2>
+              <p className="text-[#737373] text-sm mb-6">Podaj dane do zamówienia.</p>
             </div>
             
             <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-sm border border-[#E6E2DA] flex flex-col gap-5">
@@ -247,35 +256,6 @@ export default function Checkout() {
                 </div>
                 {errors.phone && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.phone}</span>}
               </div>
-
-              <AnimatePresence>
-                {delivery.id === 'courier' && (
-                  <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden flex flex-col gap-5 pt-3 border-t border-[#EAE6DF]"
-                  >
-                    <div className="w-full relative">
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#737373] ml-4 mb-1 block">Ulica i numer lokalu</label>
-                      <input name="street" value={formData.street} onChange={handleInputChange} className={`w-full bg-[#F7F6F4] rounded-2xl px-5 py-3.5 outline-none transition-colors border ${errors.street ? 'border-red-500' : 'border-transparent focus:border-[#1A1A1A]'}`} placeholder="Kwiatowa 15/2" />
-                      {errors.street && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.street}</span>}
-                    </div>
-                    <div className="flex flex-col md:flex-row gap-5">
-                      <div className="w-1/3 relative">
-                        <label className="text-xs font-bold uppercase tracking-wider text-[#737373] ml-4 mb-1 block">Kod pocztowy</label>
-                        <input name="postalCode" value={formData.postalCode} onChange={handleInputChange} className={`w-full bg-[#F7F6F4] rounded-2xl px-5 py-3.5 outline-none transition-colors border ${errors.postalCode ? 'border-red-500' : 'border-transparent focus:border-[#1A1A1A]'}`} placeholder="00-000" />
-                        {errors.postalCode && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.postalCode}</span>}
-                      </div>
-                      <div className="w-2/3 relative">
-                        <label className="text-xs font-bold uppercase tracking-wider text-[#737373] ml-4 mb-1 block">Miasto</label>
-                        <input name="city" value={formData.city} onChange={handleInputChange} className={`w-full bg-[#F7F6F4] rounded-2xl px-5 py-3.5 outline-none transition-colors border ${errors.city ? 'border-red-500' : 'border-transparent focus:border-[#1A1A1A]'}`} placeholder="Warszawa" />
-                        {errors.city && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.city}</span>}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </section>
 
@@ -293,7 +273,10 @@ export default function Checkout() {
                  return (
                    <div 
                      key={method.id}
-                     onClick={() => setDelivery(method)}
+                     onClick={() => {
+                        setDelivery(method);
+                        setErrors(prev => ({ ...prev, delivery: '' }));
+                     }}
                      className={`relative bg-white p-5 rounded-[24px] border-[2px] cursor-pointer transition-all duration-300 ${isActive ? 'border-[#1A1A1A] shadow-md' : 'border-[#E6E2DA] hover:border-[#1A1A1A]/40'}`}
                    >
                      <div className="flex items-center gap-4">
@@ -311,6 +294,7 @@ export default function Checkout() {
                })}
              </div>
 
+             {/* PACZKOMAT INPOST LOGIC */}
              <AnimatePresence>
                {delivery.id === 'inpost' && (
                  <motion.div 
@@ -321,22 +305,60 @@ export default function Checkout() {
                  >
                    <div className={`bg-white p-6 rounded-[24px] border ${errors.delivery ? 'border-red-500' : 'border-[#E6E2DA]'}`}>
                      
-                     {/* Informacja o wybranym punkcie InPost */}
                      {!selectedPoint ? (
-                       <div className="flex flex-col gap-4">
-                         <div className="flex items-center justify-between">
-                           <div className="flex items-center gap-3 text-[#A3A3A3]">
-                             <MapPin className="w-5 h-5" />
-                             <span className="text-sm font-light">Brak wybranego punktu</span>
+                       <div className="flex flex-col gap-0">
+                         <h3 className="font-semibold text-[15px] mb-4">Gdzie chcesz odebrać paczkę?</h3>
+                         
+                         {/* Search Form always visible when point not selected */}
+                         <div className="flex flex-col sm:flex-row gap-4 mb-2">
+                           <div className="w-full sm:w-1/3 relative">
+                             <input 
+                               value={searchPostalCode} 
+                               onChange={(e) => setSearchPostalCode(e.target.value)} 
+                               className="w-full bg-[#F7F6F4] rounded-[16px] px-5 py-3.5 outline-none transition-colors border border-transparent focus:border-[#1A1A1A] text-sm" 
+                               placeholder="Kod pocztowy" 
+                             />
                            </div>
-                           <button 
-                             type="button"
-                             onClick={() => setIsChoosingPoint(true)}
-                             className="px-5 py-2.5 bg-[#1A1A1A] hover:bg-[#2C2C2C] text-white text-sm font-semibold rounded-full transition-colors"
-                           >
-                             Wybierz na mapie
-                           </button>
+                           <div className="w-full sm:w-2/3 relative">
+                             <input 
+                               value={searchCity} 
+                               onChange={(e) => setSearchCity(e.target.value)} 
+                               className="w-full bg-[#F7F6F4] rounded-[16px] px-5 py-3.5 outline-none transition-colors border border-transparent focus:border-[#1A1A1A] text-sm" 
+                               placeholder="Miasto" 
+                               onKeyDown={(e) => {
+                                 if (e.key === 'Enter') {
+                                   e.preventDefault();
+                                   handleSearchPaczkomat();
+                                 }
+                               }}
+                             />
+                           </div>
                          </div>
+                         
+                         {searchError && <p className="text-red-500 text-xs font-medium px-2 py-2">{searchError}</p>}
+                         
+                         <button 
+                           type="button" 
+                           onClick={handleSearchPaczkomat} 
+                           disabled={searchLoading}
+                           className="w-full mt-3 py-3.5 bg-[#1A1A1A] text-white border border-[#1A1A1A] hover:bg-[#2C2C2C] rounded-[16px] text-sm font-semibold transition-colors flex items-center justify-center gap-2 group"
+                         >
+                           {searchLoading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <MapPin className="w-4 h-4 text-white" />}
+                           Pokaż najbliższe paczkomaty
+                         </button>
+
+                         {/* Geowidget renders ONLY after successful search */}
+                         {mapCoordinates && (
+                           <div className="pt-6 mt-6 border-t border-[#EAE6DF]">
+                             <p className="text-sm text-[#737373] mb-4">Wybierz punkt z mapy bezpośrednio poniżej:</p>
+                             <div 
+                               className="w-full h-[450px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative"
+                               dangerouslySetInnerHTML={{
+                                 __html: `<inpost-geowidget token="${(import.meta.env.VITE_INPOST_GEO_TOKEN || '').trim()}" onpoint="handleInpostPoint" language="pl" config="parcelCollect"></inpost-geowidget>`
+                               }}
+                             />
+                           </div>
+                         )}
                        </div>
                      ) : (
                        <div className="flex flex-col gap-4">
@@ -352,7 +374,7 @@ export default function Checkout() {
                            </div>
                            <button 
                              type="button"
-                             onClick={() => setIsChoosingPoint(true)}
+                             onClick={() => setSelectedPoint(null)}
                              className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] underline underline-offset-4 hover:opacity-70"
                            >
                              Zmień punkt
@@ -362,64 +384,43 @@ export default function Checkout() {
                      )}
 
                      {errors.delivery && <span className="text-red-500 text-xs mt-3 block font-medium">{errors.delivery}</span>}
-
-                     {/* Official InPost Geowidget Rendering Inline */}
-                     {isChoosingPoint && (
-                         <div className="pt-6 mt-6 border-t border-[#EAE6DF]">
-                            <h3 className="font-semibold text-sm mb-4">Znajdź paczkomat w swojej okolicy:</h3>
-                            
-                            {/* Search Form */}
-                            <div className="flex flex-col gap-4 mb-6">
-                              <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="w-full sm:w-1/3 relative">
-                                  <input 
-                                    value={searchPostalCode} 
-                                    onChange={(e) => setSearchPostalCode(e.target.value)} 
-                                    className="w-full bg-[#F7F6F4] rounded-[16px] px-5 py-3 outline-none transition-colors border border-transparent focus:border-[#1A1A1A] text-sm" 
-                                    placeholder="Kod pocztowy" 
-                                  />
-                                </div>
-                                <div className="w-full sm:w-2/3 relative">
-                                  <input 
-                                    value={searchCity} 
-                                    onChange={(e) => setSearchCity(e.target.value)} 
-                                    className="w-full bg-[#F7F6F4] rounded-[16px] px-5 py-3 outline-none transition-colors border border-transparent focus:border-[#1A1A1A] text-sm" 
-                                    placeholder="Miasto" 
-                                  />
-                                </div>
-                              </div>
-                              {searchError && <p className="text-red-500 text-xs font-medium px-2">{searchError}</p>}
-                              <button 
-                                type="button" 
-                                onClick={handleSearchPaczkomat} 
-                                disabled={searchLoading}
-                                className="w-full py-3.5 bg-white text-[#1A1A1A] border border-[#E6E2DA] hover:bg-[#F7F6F4] rounded-[16px] text-sm font-semibold transition-colors flex items-center justify-center gap-2 group"
-                              >
-                                {searchLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#A3A3A3]" /> : <MapPin className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#1A1A1A] transition-colors" />}
-                                Wyświetl najbliższe paczkomaty
-                              </button>
-                            </div>
-
-                            <div 
-                              className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative"
-                              dangerouslySetInnerHTML={{
-                                __html: `<inpost-geowidget token="${(import.meta.env.VITE_INPOST_GEO_TOKEN || '').trim()}" onpoint="handleInpostPoint" language="pl" config="parcelCollect"></inpost-geowidget>`
-                              }}
-                            />
-                            <button 
-                              type="button"
-                              onClick={() => setIsChoosingPoint(false)}
-                              className="w-full mt-4 py-3 text-sm font-medium text-[#737373] hover:text-[#1A1A1A] transition-colors"
-                            >
-                              Anuluj wybór
-                            </button>
-                         </div>
-                       )}
-
                    </div>
                  </motion.div>
                )}
              </AnimatePresence>
+
+             {/* KURIER LOGIC */}
+             <AnimatePresence>
+                {delivery.id === 'courier' && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden flex flex-col pt-4"
+                  >
+                    <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-sm border border-[#E6E2DA] flex flex-col gap-5">
+                      <h3 className="font-semibold text-[15px] mb-2">Adres do dostawy</h3>
+                      <div className="w-full relative">
+                        <label className="text-xs font-bold uppercase tracking-wider text-[#737373] ml-4 mb-1 block">Ulica i numer lokalu</label>
+                        <input name="street" value={formData.street} onChange={handleInputChange} className={`w-full bg-[#F7F6F4] rounded-2xl px-5 py-3.5 outline-none transition-colors border ${errors.street ? 'border-red-500' : 'border-transparent focus:border-[#1A1A1A]'}`} placeholder="Kwiatowa 15/2" />
+                        {errors.street && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.street}</span>}
+                      </div>
+                      <div className="flex flex-col md:flex-row gap-5">
+                        <div className="w-1/3 relative">
+                          <label className="text-xs font-bold uppercase tracking-wider text-[#737373] ml-4 mb-1 block">Kod pocztowy</label>
+                          <input name="postalCode" value={formData.postalCode} onChange={handleInputChange} className={`w-full bg-[#F7F6F4] rounded-2xl px-5 py-3.5 outline-none transition-colors border ${errors.postalCode ? 'border-red-500' : 'border-transparent focus:border-[#1A1A1A]'}`} placeholder="00-000" />
+                          {errors.postalCode && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.postalCode}</span>}
+                        </div>
+                        <div className="w-2/3 relative">
+                          <label className="text-xs font-bold uppercase tracking-wider text-[#737373] ml-4 mb-1 block">Miasto</label>
+                          <input name="city" value={formData.city} onChange={handleInputChange} className={`w-full bg-[#F7F6F4] rounded-2xl px-5 py-3.5 outline-none transition-colors border ${errors.city ? 'border-red-500' : 'border-transparent focus:border-[#1A1A1A]'}`} placeholder="Warszawa" />
+                          {errors.city && <span className="text-red-500 text-xs mt-1 ml-4 block font-medium">{errors.city}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
           </section>
         </div>
 
