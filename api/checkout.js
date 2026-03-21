@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { items, delivery } = req.body;
+    const { items, delivery, customerData, pointData } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'Cart is empty' });
@@ -45,8 +45,25 @@ export default async function handler(req, res) {
        });
     }
 
-    // Set origin to use the host making the request
     const origin = req.headers.origin || `https://${req.headers.host}`;
+
+    const metadata = {
+      delivery_method: delivery ? delivery.name : 'Nie wybrano',
+      first_name: customerData?.firstName || '',
+      last_name: customerData?.lastName || '',
+      email: customerData?.email || '',
+      phone: customerData?.phone || '',
+    };
+
+    if (delivery && delivery.id === 'courier') {
+      metadata.street = customerData?.street || '';
+      metadata.city = customerData?.city || '';
+      metadata.postal_code = customerData?.postalCode || '';
+    } else if (delivery && delivery.id === 'inpost' && pointData) {
+      metadata.paczkomat_name = pointData.name || '';
+      metadata.paczkomat_address = pointData.address || '';
+      metadata.paczkomat_city = pointData.city || '';
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'blik', 'p24'],
@@ -54,6 +71,10 @@ export default async function handler(req, res) {
       mode: 'payment',
       success_url: `${origin}/#success`,
       cancel_url: `${origin}/#cart`,
+      payment_intent_data: {
+        metadata: metadata
+      },
+      metadata: metadata
     });
 
     res.status(200).json({ url: session.url });

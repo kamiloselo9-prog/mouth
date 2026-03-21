@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ArrowLeft, Truck, MapPin, Package, Check, Loader2 } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Truck, MapPin, Package, Loader2 } from 'lucide-react';
 import { useCart } from '../store/useCart';
+
+declare global {
+  interface Window {
+    handleInpostPoint: (point: any) => void;
+  }
+}
+
+const InpostGeowidget = (props: any) => React.createElement('inpost-geowidget', props);
 
 const deliveryMethods = [
   { id: 'inpost', name: 'Paczkomat InPost', price: 12.99, icon: BoxIcon },
@@ -37,10 +45,27 @@ export default function Checkout() {
   
   // Point selection state
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
-  const [isPointModalOpen, setIsPointModalOpen] = useState(false);
+  const [isChoosingPoint, setIsChoosingPoint] = useState(false);
   
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Register global callback for InPost Geowidget
+    window.handleInpostPoint = (point: any) => {
+      setSelectedPoint({
+        name: point.name,
+        address: `${point.address.line1}, ${point.address.line2}`,
+        city: point.address_details.city || point.address.line2.split(' ').pop() || '',
+        code: point.name // The point name (e.g. WAW123M) is typically the machine code
+      });
+      setIsChoosingPoint(false);
+      // Clean up error if previously empty
+      setErrors(prev => ({ ...prev, delivery: '' }));
+    };
+
+    return () => {
+      delete (window as any).handleInpostPoint;
+    };
   }, []);
 
   const total = cartTotal + delivery.price;
@@ -66,7 +91,7 @@ export default function Checkout() {
     if (delivery.id === 'courier' && !/^\d{2}-\d{3}$/.test(formData.postalCode)) newErrors.postalCode = "Poprawny format: 00-000";
     if (delivery.id === 'courier' && !formData.city.trim()) newErrors.city = "Podaj miasto";
     
-    if (delivery.id === 'inpost' && !selectedPoint) newErrors.delivery = "Wybierz punkt odbioru";
+    if (delivery.id === 'inpost' && !selectedPoint) newErrors.delivery = "Wybierz punkt odbioru, używając mapy";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -85,7 +110,8 @@ export default function Checkout() {
           body: JSON.stringify({
             items,
             delivery,
-            customerData: formData, // Opcjonalnie do jakiejś logiki (teraz idą tylko na Stripe ekran)
+            customerData: formData,
+            pointData: selectedPoint
           }),
         });
   
@@ -106,17 +132,6 @@ export default function Checkout() {
          setIsSubmitting(false);
       }
     }
-  };
-
-  // Mock point selection
-  const selectMockPoint = () => {
-    setSelectedPoint({
-      name: "WAW123M",
-      address: "Mickiewicza 12, 01-234 Warszawa",
-      distance: "0.4 km"
-    });
-    setIsPointModalOpen(false);
-    if (errors.delivery) setErrors(prev => ({ ...prev, delivery: '' }));
   };
 
   if (items.length === 0) {
@@ -153,7 +168,10 @@ export default function Checkout() {
           
           {/* SEKACJA: DANE KLIENTA */}
           <section>
-            <h2 className="text-2xl font-light mb-6">Dane kontaktowe & Adres</h2>
+            <div>
+              <h2 className="text-2xl font-light mb-2">Dane kontaktowe & Adres</h2>
+              <p className="text-[#737373] text-sm mb-6">Podaj dane potrzebne do realizacji zamówienia.</p>
+            </div>
             
             <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-sm border border-[#E6E2DA] flex flex-col gap-5">
               
@@ -218,7 +236,11 @@ export default function Checkout() {
 
           {/* SEKCJA: METODA DOSTAWY */}
           <section>
-             <h2 className="text-2xl font-light mb-6">Metoda dostawy</h2>
+             <div>
+               <h2 className="text-2xl font-light mb-2">Wybierz metodę dostawy</h2>
+               <p className="text-[#737373] text-sm mb-6">Dopasuj sposób dostawy do swoich preferencji.</p>
+             </div>
+             
              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                {deliveryMethods.map((method) => {
                  const isActive = delivery.id === method.id;
@@ -253,42 +275,78 @@ export default function Checkout() {
                    className="mt-4 overflow-hidden"
                  >
                    <div className={`bg-white p-6 rounded-[24px] border ${errors.delivery ? 'border-red-500' : 'border-[#E6E2DA]'}`}>
+                     
+                     {/* Informacja o wybranym punkcie InPost */}
                      {!selectedPoint ? (
-                       <div className="flex items-center justify-between">
-                         <div className="flex items-center gap-3 text-[#A3A3A3]">
-                           <MapPin className="w-5 h-5" />
-                           <span className="text-sm font-light">Brak wybranego punktu</span>
+                       <div className="flex flex-col gap-4">
+                         <div className="flex items-center justify-between">
+                           <div className="flex items-center gap-3 text-[#A3A3A3]">
+                             <MapPin className="w-5 h-5" />
+                             <span className="text-sm font-light">Brak wybranego punktu</span>
+                           </div>
+                           <button 
+                             type="button"
+                             onClick={() => setIsChoosingPoint(true)}
+                             className="px-5 py-2.5 bg-[#1A1A1A] hover:bg-[#2C2C2C] text-white text-sm font-semibold rounded-full transition-colors"
+                           >
+                             Wybierz na mapie
+                           </button>
                          </div>
-                         <button 
-                           type="button"
-                           onClick={() => setIsPointModalOpen(true)}
-                           className="px-5 py-2.5 bg-[#F7F6F4] hover:bg-[#EAE6DF] text-[#1A1A1A] text-sm font-semibold rounded-full transition-colors"
-                         >
-                           Wybierz punkt
-                         </button>
                        </div>
                      ) : (
-                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                         <div className="flex items-start gap-4">
-                           <div className="w-10 h-10 bg-[#FFCE00]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                             <Package className="w-5 h-5 text-[#FFCE00]" />
+                       <div className="flex flex-col gap-4">
+                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                           <div className="flex items-start gap-4">
+                             <div className="w-10 h-10 bg-[#FFCE00]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                               <Package className="w-5 h-5 text-[#FFCE00]" />
+                             </div>
+                             <div>
+                               <div className="font-bold text-[#1A1A1A] text-[15px]">{selectedPoint.name}</div>
+                               <div className="text-[#737373] text-sm font-light">{selectedPoint.address}</div>
+                             </div>
                            </div>
-                           <div>
-                             <div className="font-bold text-[#1A1A1A] text-[15px]">{selectedPoint.name}</div>
-                             <div className="text-[#737373] text-sm font-light">{selectedPoint.address}</div>
-                             <div className="text-[11px] uppercase tracking-widest font-bold text-[#1A1A1A]/50 mt-1">{selectedPoint.distance} stąd</div>
-                           </div>
+                           <button 
+                             type="button"
+                             onClick={() => setIsChoosingPoint(true)}
+                             className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] underline underline-offset-4 hover:opacity-70"
+                           >
+                             Zmień punkt
+                           </button>
                          </div>
-                         <button 
-                           type="button"
-                           onClick={() => setIsPointModalOpen(true)}
-                           className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] underline underline-offset-4 hover:opacity-70"
-                         >
-                           Zmień
-                         </button>
                        </div>
                      )}
+
                      {errors.delivery && <span className="text-red-500 text-xs mt-3 block font-medium">{errors.delivery}</span>}
+
+                     {/* Official InPost Geowidget Rendering Inline */}
+                     <AnimatePresence>
+                       {isChoosingPoint && (
+                         <motion.div 
+                           initial={{ height: 0, opacity: 0 }}
+                           animate={{ height: 'auto', opacity: 1 }}
+                           exit={{ height: 0, opacity: 0 }}
+                           className="pt-6 mt-6 border-t border-[#EAE6DF]"
+                         >
+                            <h3 className="font-semibold text-sm mb-4">Znajdź paczkomat w swojej okolicy:</h3>
+                            <div className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative">
+                               <InpostGeowidget 
+                                 token={import.meta.env.VITE_INPOST_GEO_TOKEN} 
+                                 onpoint="handleInpostPoint" 
+                                 language="pl" 
+                                 config="parcelCollect"
+                               />
+                            </div>
+                            <button 
+                              type="button"
+                              onClick={() => setIsChoosingPoint(false)}
+                              className="w-full mt-4 py-3 text-sm font-medium text-[#737373] hover:text-[#1A1A1A] transition-colors"
+                            >
+                              Anuluj wybór
+                            </button>
+                         </motion.div>
+                       )}
+                     </AnimatePresence>
+
                    </div>
                  </motion.div>
                )}
@@ -330,6 +388,15 @@ export default function Checkout() {
                    <span>Dostawa ({delivery.name})</span>
                    <span>{delivery.price.toFixed(2).replace('.', ',')} zł</span>
                  </div>
+                 
+                 {/* Dodanie wybranego punktu InPost do Summary */}
+                 {delivery.id === 'inpost' && selectedPoint && (
+                   <div className="pt-2 flex flex-col items-end text-[12px] text-[#A3A3A3]">
+                     <span>Wybrany punkt:</span>
+                     <span className="font-medium text-[#1A1A1A]">{selectedPoint.name}</span>
+                     <span>{selectedPoint.address}</span>
+                   </div>
+                 )}
                </div>
 
                <div className="py-6 flex justify-between items-end">
@@ -369,51 +436,6 @@ export default function Checkout() {
           </div>
         </div>
       </form>
-
-      <AnimatePresence>
-        {isPointModalOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#1A1A1A]/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
-          >
-            <motion.div 
-              initial={{ y: 50, scale: 0.98 }}
-              animate={{ y: 0, scale: 1 }}
-              exit={{ y: 20, scale: 0.98 }}
-              className="w-full max-w-md bg-white rounded-[32px] p-6 shadow-2xl"
-            >
-               <h3 className="text-2xl font-light mb-6">Wybierz punkt</h3>
-               <div className="h-48 bg-[#F7F6F4] rounded-[24px] border border-[#E6E2DA] flex items-center justify-center mb-6 overflow-hidden relative">
-                 <div className="absolute inset-0 opacity-20 bg-[url('https://maps.wikimedia.org/osm-intl/12/2360/1346.png')] bg-cover bg-center"></div>
-                 <MapPin className="w-10 h-10 text-[#FFCE00] relative z-10 drop-shadow-lg" />
-                 <span className="relative z-10 text-[#1A1A1A] font-light mt-14 -ml-7 bg-white px-3 py-1 rounded-full shadow-sm text-xs border border-[#EAE6DF]">Jesteś tutaj</span>
-               </div>
-               
-               <div 
-                 onClick={selectMockPoint}
-                 className="p-4 border-[2px] border-[#1A1A1A] rounded-[20px] bg-[#F7F6F4]/50 cursor-pointer flex items-center justify-between"
-               >
-                 <div>
-                   <div className="font-bold text-[#1A1A1A]">Paczkomat WAW123M</div>
-                   <div className="text-sm text-[#737373] mt-1">Mickiewicza 12, Warszawa</div>
-                 </div>
-                 <div className="w-6 h-6 rounded-full bg-[#1A1A1A] flex items-center justify-center">
-                   <Check className="w-3.5 h-3.5 text-white" />
-                 </div>
-               </div>
-
-               <button 
-                 onClick={() => setIsPointModalOpen(false)}
-                 className="w-full py-4 mt-6 text-[#1A1A1A] font-bold text-sm uppercase tracking-widest hover:opacity-70 transition-opacity"
-               >
-                 Anuluj
-               </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
