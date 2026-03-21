@@ -18,9 +18,16 @@ function App() {
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
   const [isSnapping, setIsSnapping] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+    };
+    checkMobile();
+    
     const handleResize = () => {
+      checkMobile();
       if (contentRef.current) {
         setContentHeight(contentRef.current.scrollHeight);
       }
@@ -33,7 +40,7 @@ function App() {
 
   const { scrollY } = useScroll();
   
-  // Custom Smooth Scroll with inertia
+  // Custom Smooth Scroll with inertia (desktop only)
   const smoothY = useSpring(scrollY, {
     damping: 25,
     stiffness: 120,
@@ -42,12 +49,12 @@ function App() {
 
   const y = useTransform(smoothY, (value) => -value);
 
-  // SNAP LOGIC: One-way forward transition to Comparison
+  // SNAP LOGIC: One-way forward transition to Comparison (desktop only)
   const lastScrollY = useRef(0);
 
   useEffect(() => {
     const unsubscribe = scrollY.onChange((latest) => {
-      if (isSnapping) {
+      if (isMobile || isSnapping) {
         lastScrollY.current = latest;
         return;
       }
@@ -63,7 +70,6 @@ function App() {
         const comparisonTop = comparisonSection.offsetTop;
 
         // One-way Forward Trigger: 
-        // Trigger only if scrolling down and near the transition zone
         if (isScrollingDown && latest > bEnd - 150 && latest < comparisonTop - 100) {
           setIsSnapping(true);
           
@@ -73,7 +79,6 @@ function App() {
             duration: 1.2,
             onUpdate: (val) => window.scrollTo(0, val),
             onComplete: () => {
-              // Longer debounce to prevent re-triggering immediately
               setTimeout(() => setIsSnapping(false), 500);
             }
           });
@@ -82,7 +87,7 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [scrollY, isSnapping]);
+  }, [scrollY, isSnapping, isMobile]);
 
   const [currentHash, setCurrentHash] = useState(window.location.hash);
 
@@ -122,7 +127,7 @@ function App() {
 
   return (
     <div className="bg-[var(--color-brand-bg)] text-[#1A1A1A] font-sans antialiased overflow-x-hidden relative">
-      <div style={{ height: contentHeight }} />
+      {!isMobile && <div style={{ height: contentHeight }} />}
 
       <Header />
       
@@ -133,8 +138,8 @@ function App() {
 
       <motion.div 
         ref={contentRef}
-        style={{ y }}
-        className="fixed top-0 left-0 w-full flex flex-col z-10"
+        style={!isMobile ? { y } : {}}
+        className={!isMobile ? "fixed top-0 left-0 w-full flex flex-col z-10" : "relative w-full flex flex-col z-10"}
       >
         <Hero />
         <Marquee />
