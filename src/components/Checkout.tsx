@@ -9,8 +9,6 @@ declare global {
   }
 }
 
-const InpostGeowidget = (props: any) => React.createElement('inpost-geowidget', props);
-
 const deliveryMethods = [
   { id: 'inpost', name: 'Paczkomat InPost', price: 12.99, icon: BoxIcon },
   { id: 'courier', name: 'Kurier', price: 14.99, icon: TruckIcon },
@@ -402,14 +400,12 @@ export default function Checkout() {
                               </button>
                             </div>
 
-                            <div className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative">
-                               <InpostGeowidget 
-                                 token={import.meta.env.VITE_INPOST_GEO_TOKEN || 'missing-token'} 
-                                 onpoint="handleInpostPoint" 
-                                 language="pl" 
-                                 config="parcelCollect"
-                               />
-                            </div>
+                            <div 
+                              className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative"
+                              dangerouslySetInnerHTML={{
+                                __html: `<inpost-geowidget token="${(import.meta.env.VITE_INPOST_GEO_TOKEN || '').trim()}" onpoint="handleInpostPoint" language="pl" config="parcelCollect"></inpost-geowidget>`
+                              }}
+                            />
                             <button 
                               type="button"
                               onClick={() => setIsChoosingPoint(false)}
