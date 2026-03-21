@@ -22,7 +22,10 @@ export default function FinalCTA() {
             Doświadcz głębokiego wpływu nieprzerwanego snu REM i poranków pełnych energii. Dołącz do elitarnej grupy tysięcy budzących się z potężną witalnością.
           </p>
           
-          <button className="px-12 py-6 bg-white text-[#1A1A1A] rounded-full text-lg font-bold hover:bg-[#E6E2DA] hover:scale-[1.03] transition-all duration-300 shadow-2xl shadow-white/10 focus:ring-4 focus:ring-white/50 outline-none">
+          <button 
+            onClick={() => window.location.hash = '#product'}
+            className="px-12 py-6 bg-white text-[#1A1A1A] rounded-full text-lg font-bold hover:bg-[#E6E2DA] hover:scale-[1.03] transition-all duration-300 shadow-2xl shadow-white/10 focus:ring-4 focus:ring-white/50 outline-none"
+          >
             Zdobądź Zestaw na 30 Nocy
           </button>
 

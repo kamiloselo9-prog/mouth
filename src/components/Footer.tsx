@@ -13,9 +13,9 @@ export default function Footer() {
         <div className="col-span-1 md:col-span-2">
           <h4 className="text-xs uppercase tracking-[0.2em] font-bold mb-8 text-[#737373]">Zakupy</h4>
           <ul className="space-y-5">
-            <li><a href="#" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 30-dniowy</a></li>
-            <li><a href="#" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Subskrypcja (-15%)</a></li>
-            <li><a href="#" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Prezenty / Vouchery</a></li>
+            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 30-dniowy</a></li>
+            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 60-dniowy</a></li>
+            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 90-dniowy (Najlepszy)</a></li>
           </ul>
         </div>
 

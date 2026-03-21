@@ -73,7 +73,10 @@ export default function Hero() {
 
            {/* CTA & Mini Trust Proof */}
            <div className="flex flex-col sm:flex-row items-center gap-6">
-             <button className="w-full sm:w-auto px-10 py-5 bg-[#1A1A1A] text-white rounded-full text-sm font-semibold hover:bg-[#2C2C2C] hover:scale-[1.03] transition-all duration-500 shadow-xl shadow-[#1A1A1A]/20 uppercase tracking-[0.15em] outline-none">
+             <button 
+               onClick={() => window.location.hash = '#product'}
+               className="w-full sm:w-auto px-10 py-5 bg-[#1A1A1A] text-white rounded-full text-sm font-semibold hover:bg-[#2C2C2C] hover:scale-[1.03] transition-all duration-500 shadow-xl shadow-[#1A1A1A]/20 uppercase tracking-[0.15em] outline-none"
+             >
                Zacznij spać lepiej
              </button>
              

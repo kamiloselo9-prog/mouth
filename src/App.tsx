@@ -9,6 +9,10 @@ import Testimonials from './components/Testimonials';
 import FAQ from './components/FAQ';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
+import ProductDetails from './components/ProductDetails';
+import Checkout from './components/Checkout';
+import Cart from './components/Cart';
+import CheckoutSuccess from './components/CheckoutSuccess';
 
 function App() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -79,6 +83,42 @@ function App() {
 
     return () => unsubscribe();
   }, [scrollY, isSnapping]);
+
+  const [currentHash, setCurrentHash] = useState(window.location.hash);
+
+  useEffect(() => {
+    const handleHash = () => setCurrentHash(window.location.hash);
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  if (currentHash === '#success') {
+    return <CheckoutSuccess />;
+  }
+
+  if (currentHash === '#cart') {
+    return (
+      <div className="bg-[#F7F6F4] text-[#1A1A1A] font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
+        <Header />
+        <Cart />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (currentHash === '#checkout') {
+    return <Checkout />;
+  }
+
+  if (currentHash === '#product') {
+    return (
+      <div className="bg-[#F7F6F4] text-[#1A1A1A] font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
+        <Header />
+        <ProductDetails />
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[var(--color-brand-bg)] text-[#1A1A1A] font-sans antialiased overflow-x-hidden relative">
