@@ -47,10 +47,17 @@ export default function Checkout() {
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
   const [isChoosingPoint, setIsChoosingPoint] = useState(false);
   
+  // Geowidget API and Search state
+  const [inpostApi, setInpostApi] = useState<any>(null);
+  const [searchCity, setSearchCity] = useState('');
+  const [searchPostalCode, setSearchPostalCode] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState('');
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Register global callback for InPost Geowidget
+    // Register global callback for Point Selection
     window.handleInpostPoint = (point: any) => {
       setSelectedPoint({
         name: point.name,
@@ -59,12 +66,20 @@ export default function Checkout() {
         code: point.name // The point name (e.g. WAW123M) is typically the machine code
       });
       setIsChoosingPoint(false);
-      // Clean up error if previously empty
-      setErrors(prev => ({ ...prev, delivery: '' }));
+      setErrors(prev => ({ ...prev, delivery: '' })); // Clean up error
     };
+
+    // Register event listener for Geowidget API init
+    const handleInit = (e: any) => {
+      if (e.detail && e.detail.api) {
+        setInpostApi(e.detail.api);
+      }
+    };
+    document.addEventListener('inpost.geowidget.init', handleInit);
 
     return () => {
       delete (window as any).handleInpostPoint;
+      document.removeEventListener('inpost.geowidget.init', handleInit);
     };
   }, []);
 
@@ -134,6 +149,37 @@ export default function Checkout() {
     }
   };
 
+  const handleSearchPaczkomat = async () => {
+    setSearchError('');
+    if (!searchCity.trim() || !searchPostalCode.trim()) {
+      setSearchError('Wpisz miasto i kod pocztowy.');
+      return;
+    }
+    
+    setSearchLoading(true);
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${encodeURIComponent(searchCity)}&postalcode=${encodeURIComponent(searchPostalCode)}&country=Poland`);
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        if (inpostApi) {
+          inpostApi.changePosition({ latitude: parseFloat(lat), longitude: parseFloat(lon) }, 16);
+        } else {
+          // Fallback if API is not fully loaded somehow but user managed to click
+          setSearchError('Mapa ładuje się. Spróbuj kliknąć za chwilę.');
+        }
+      } else {
+        setSearchError('Nie udało się znaleźć lokalizacji. Spróbuj ponownie.');
+      }
+    } catch (err) {
+      console.error('Błąd wyszukiwania:', err);
+      setSearchError('Wystąpił błąd podczas wyszukiwania. Spróbuj ponownie.');
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-[#F0F0F0] text-[#1A1A1A] font-sans flex flex-col items-center justify-center p-6 text-center">
@@ -151,6 +197,7 @@ export default function Checkout() {
       <div className="bg-white border-b border-[#E6E2DA] sticky top-0 z-40">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
           <button 
+            type="button"
             onClick={() => window.location.hash = '#cart'}
             className="flex items-center gap-2 text-sm font-medium text-[#737373] hover:text-[#1A1A1A] transition-colors"
           >
@@ -328,6 +375,39 @@ export default function Checkout() {
                            className="pt-6 mt-6 border-t border-[#EAE6DF]"
                          >
                             <h3 className="font-semibold text-sm mb-4">Znajdź paczkomat w swojej okolicy:</h3>
+                            
+                            {/* Search Form */}
+                            <div className="flex flex-col gap-4 mb-6">
+                              <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="w-full sm:w-1/3 relative">
+                                  <input 
+                                    value={searchPostalCode} 
+                                    onChange={(e) => setSearchPostalCode(e.target.value)} 
+                                    className="w-full bg-[#F7F6F4] rounded-[16px] px-5 py-3 outline-none transition-colors border border-transparent focus:border-[#1A1A1A] text-sm" 
+                                    placeholder="Kod pocztowy" 
+                                  />
+                                </div>
+                                <div className="w-full sm:w-2/3 relative">
+                                  <input 
+                                    value={searchCity} 
+                                    onChange={(e) => setSearchCity(e.target.value)} 
+                                    className="w-full bg-[#F7F6F4] rounded-[16px] px-5 py-3 outline-none transition-colors border border-transparent focus:border-[#1A1A1A] text-sm" 
+                                    placeholder="Miasto" 
+                                  />
+                                </div>
+                              </div>
+                              {searchError && <p className="text-red-500 text-xs font-medium px-2">{searchError}</p>}
+                              <button 
+                                type="button" 
+                                onClick={handleSearchPaczkomat} 
+                                disabled={searchLoading}
+                                className="w-full py-3.5 bg-white text-[#1A1A1A] border border-[#E6E2DA] hover:bg-[#F7F6F4] rounded-[16px] text-sm font-semibold transition-colors flex items-center justify-center gap-2 group"
+                              >
+                                {searchLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#A3A3A3]" /> : <MapPin className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#1A1A1A] transition-colors" />}
+                                Wyświetl najbliższe paczkomaty
+                              </button>
+                            </div>
+
                             <div className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative">
                                <InpostGeowidget 
                                  token={import.meta.env.VITE_INPOST_GEO_TOKEN} 
