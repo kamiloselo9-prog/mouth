@@ -1,13 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ArrowLeft, Truck, MapPin, Package, Loader2 } from 'lucide-react';
 import { useCart } from '../store/useCart';
-
-declare global {
-  interface Window {
-    handleInpostPoint: (point: any) => void;
-  }
-}
 
 const deliveryMethods = [
   { id: 'inpost', name: 'Paczkomat InPost', price: 12.99, icon: BoxIcon },
@@ -44,54 +38,17 @@ export default function Checkout() {
   // Point selection state
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
   
-  // Geowidget API and Search state
-  const inpostApiRef = useRef<any>(null);
+  // Custom API Search state
   const [searchCity, setSearchCity] = useState('');
   const [searchPostalCode, setSearchPostalCode] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
+  
   const [hasSearched, setHasSearched] = useState(false);
-  const pendingCoordsRef = useRef<{lat: number, lon: number} | null>(null);
+  const [pointList, setPointList] = useState<any[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-
-    // Register global callback for Point Selection
-    window.handleInpostPoint = (point: any) => {
-      setSelectedPoint({
-        name: point.name,
-        address: `${point.address.line1}, ${point.address.line2}`,
-        city: point.address_details?.city || point.address.line2.split(' ').pop() || '',
-        code: point.name // The point name (e.g. WAW123M) is typically the machine code
-      });
-      setErrors(prev => ({ ...prev, delivery: '' })); // Clean up error
-    };
-
-    // Register event listener for Geowidget API init
-    const handleInit = (e: any) => {
-      if (e.detail && e.detail.api) {
-        inpostApiRef.current = e.detail.api;
-        
-        if (pendingCoordsRef.current) {
-          try {
-            e.detail.api.changePosition({ 
-              latitude: pendingCoordsRef.current.lat, 
-              longitude: pendingCoordsRef.current.lon 
-            }, 16);
-          } catch (err) {
-            console.warn('Geowidget map position error:', err);
-          }
-          pendingCoordsRef.current = null;
-        }
-      }
-    };
-    
-    document.addEventListener('inpost.geowidget.init', handleInit);
-
-    return () => {
-      delete (window as any).handleInpostPoint;
-      document.removeEventListener('inpost.geowidget.init', handleInit);
-    };
   }, []);
 
   const total = cartTotal + delivery.price;
@@ -169,28 +126,29 @@ export default function Checkout() {
     
     setSearchLoading(true);
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${encodeURIComponent(searchCity)}&postalcode=${encodeURIComponent(searchPostalCode)}&country=Poland`);
-      const data = await response.json();
+      const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${encodeURIComponent(searchCity)}&postalcode=${encodeURIComponent(searchPostalCode)}&country=Poland`);
+      const geoData = await geoResponse.json();
       
-      if (data && data.length > 0) {
-        const latNum = parseFloat(data[0].lat);
-        const lonNum = parseFloat(data[0].lon);
+      if (geoData && geoData.length > 0) {
+        const lat = parseFloat(geoData[0].lat);
+        const lon = parseFloat(geoData[0].lon);
         
-        setHasSearched(true);
-
-        if (inpostApiRef.current) {
-          // If already mounted and initialized, just change position cleanly
-          inpostApiRef.current.changePosition({ latitude: latNum, longitude: lonNum }, 16);
+        // Fetch 5 nearest lockers from public Easypack API
+        const inpostResponse = await fetch(`https://api-pl-points.easypack24.net/v1/points?relative_point=${lat},${lon}&limit=5&type=parcel_locker`);
+        const inpostData = await inpostResponse.json();
+        
+        if (inpostData && inpostData.items && inpostData.items.length > 0) {
+          setPointList(inpostData.items);
+          setHasSearched(true);
         } else {
-          // Send coords queue for the init handler
-          pendingCoordsRef.current = { lat: latNum, lon: lonNum };
+          setSearchError('Brak paczkomatów w pobliżu tej lokalizacji.');
         }
       } else {
         setSearchError('Nie udało się znaleźć lokalizacji. Sprawdź kod pocztowy i miasto.');
       }
     } catch (err) {
       console.error('Błąd wyszukiwania:', err);
-      setSearchError('Nie udało się pobrać lokalizacji. Spróbuj ponownie.');
+      setSearchError('Wystąpił błąd sieci. Spróbuj ponownie.');
     } finally {
       setSearchLoading(false);
     }
@@ -303,7 +261,7 @@ export default function Checkout() {
                })}
              </div>
 
-             {/* PACZKOMAT INPOST LOGIC */}
+             {/* PACZKOMAT INPOST LOGIC - CLEAN LIST ONLY */}
              <AnimatePresence>
                {delivery.id === 'inpost' && (
                  <motion.div 
@@ -356,16 +314,40 @@ export default function Checkout() {
                            Pokaż najbliższe paczkomaty
                          </button>
 
-                         {/* Geowidget renders ONLY after the FIRST successful search and stays stable */}
-                         {hasSearched && (
-                           <div className="pt-6 mt-6 border-t border-[#EAE6DF]">
-                             <p className="text-sm font-medium text-[#1A1A1A] mb-4">Wybierz punkt z listy pod mapą:</p>
-                             <div 
-                               className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative"
-                               dangerouslySetInnerHTML={{
-                                 __html: `<inpost-geowidget token="${(import.meta.env.VITE_INPOST_GEO_TOKEN || '').trim()}" onpoint="handleInpostPoint" language="pl" config="parcelCollect"></inpost-geowidget>`
-                               }}
-                             />
+                         {/* Pure React List - No Maps */}
+                         {hasSearched && pointList.length > 0 && (
+                           <div className="pt-6 mt-6 border-t border-[#EAE6DF] flex flex-col gap-3">
+                             <p className="text-sm font-medium text-[#1A1A1A] mb-2">Wybierz jeden z najbliższych punktów:</p>
+                             
+                             {pointList.map(point => (
+                               <div 
+                                 key={point.name}
+                                 onClick={() => {
+                                   setSelectedPoint({
+                                     name: point.name,
+                                     address: `${point.address.line1}, ${point.address.line2}`,
+                                     city: point.address_details?.city || '',
+                                     code: point.name
+                                   });
+                                   setErrors(prev => ({ ...prev, delivery: '' }));
+                                 }}
+                                 className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 bg-white border border-[#EAE6DF] rounded-[16px] cursor-pointer hover:border-[#1A1A1A] hover:shadow-sm transition-all group"
+                               >
+                                 <div className="w-12 h-12 bg-[#FFCE00]/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-[#FFCE00]/20 transition-colors">
+                                   <Package className="w-6 h-6 text-[#FFCE00]" />
+                                 </div>
+                                 <div className="flex-grow">
+                                   <div className="flex justify-between items-start sm:items-center mb-1 gap-2">
+                                     <span className="font-bold text-[#1A1A1A] text-[15px]">{point.name}</span>
+                                     <span className="text-xs font-semibold text-[#A3A3A3] bg-[#F7F6F4] px-2 py-1 rounded-md whitespace-nowrap">~{Math.round(point.distance)} m</span>
+                                   </div>
+                                   <div className="text-[#737373] text-sm font-light mb-1">{point.address.line1}, {point.address.line2}</div>
+                                   {point.location_description && (
+                                     <div className="text-[#A3A3A3] text-xs italic">{point.location_description}</div>
+                                   )}
+                                 </div>
+                               </div>
+                             ))}
                            </div>
                          )}
                        </div>
