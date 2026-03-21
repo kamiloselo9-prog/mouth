@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ArrowLeft, Truck, MapPin, Package, Loader2 } from 'lucide-react';
 import { useCart } from '../store/useCart';
@@ -45,12 +45,13 @@ export default function Checkout() {
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
   
   // Geowidget API and Search state
-  const [inpostApi, setInpostApi] = useState<any>(null);
+  const inpostApiRef = useRef<any>(null);
   const [searchCity, setSearchCity] = useState('');
   const [searchPostalCode, setSearchPostalCode] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
-  const [mapCoordinates, setMapCoordinates] = useState<{lat: number, lon: number} | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const pendingCoordsRef = useRef<{lat: number, lon: number} | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -69,9 +70,22 @@ export default function Checkout() {
     // Register event listener for Geowidget API init
     const handleInit = (e: any) => {
       if (e.detail && e.detail.api) {
-        setInpostApi(e.detail.api);
+        inpostApiRef.current = e.detail.api;
+        
+        if (pendingCoordsRef.current) {
+          try {
+            e.detail.api.changePosition({ 
+              latitude: pendingCoordsRef.current.lat, 
+              longitude: pendingCoordsRef.current.lon 
+            }, 16);
+          } catch (err) {
+            console.warn('Geowidget map position error:', err);
+          }
+          pendingCoordsRef.current = null;
+        }
       }
     };
+    
     document.addEventListener('inpost.geowidget.init', handleInit);
 
     return () => {
@@ -79,20 +93,6 @@ export default function Checkout() {
       document.removeEventListener('inpost.geowidget.init', handleInit);
     };
   }, []);
-
-  // Update position if API and coords are ready
-  useEffect(() => {
-    if (inpostApi && mapCoordinates) {
-      // Use setTimeout to ensure DOM is fully ready or API has processed its internal map
-      setTimeout(() => {
-        try {
-          inpostApi.changePosition({ latitude: mapCoordinates.lat, longitude: mapCoordinates.lon }, 16);
-        } catch (err) {
-          console.warn('Geowidget API changePosition warn:', err);
-        }
-      }, 500);
-    }
-  }, [inpostApi, mapCoordinates]);
 
   const total = cartTotal + delivery.price;
 
@@ -173,15 +173,24 @@ export default function Checkout() {
       const data = await response.json();
       
       if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        setMapCoordinates({ lat: parseFloat(lat), lon: parseFloat(lon) });
-        // The useEffect will trigger changePosition when widget loads
+        const latNum = parseFloat(data[0].lat);
+        const lonNum = parseFloat(data[0].lon);
+        
+        setHasSearched(true);
+
+        if (inpostApiRef.current) {
+          // If already mounted and initialized, just change position cleanly
+          inpostApiRef.current.changePosition({ latitude: latNum, longitude: lonNum }, 16);
+        } else {
+          // Send coords queue for the init handler
+          pendingCoordsRef.current = { lat: latNum, lon: lonNum };
+        }
       } else {
-        setSearchError('Nie udało się znaleźć tej lokalizacji. Sprawdź dane i spróbuj ponownie.');
+        setSearchError('Nie udało się znaleźć lokalizacji. Sprawdź kod pocztowy i miasto.');
       }
     } catch (err) {
       console.error('Błąd wyszukiwania:', err);
-      setSearchError('Nie udało się znaleźć tej lokalizacji. Sprawdź dane i spróbuj ponownie.');
+      setSearchError('Nie udało się pobrać lokalizacji. Spróbuj ponownie.');
     } finally {
       setSearchLoading(false);
     }
@@ -307,7 +316,7 @@ export default function Checkout() {
                      
                      {!selectedPoint ? (
                        <div className="flex flex-col gap-0">
-                         <h3 className="font-semibold text-[15px] mb-4">Gdzie chcesz odebrać paczkę?</h3>
+                         <h3 className="font-semibold text-[15px] mb-4">Znajdź paczkomat w swojej okolicy</h3>
                          
                          {/* Search Form always visible when point not selected */}
                          <div className="flex flex-col sm:flex-row gap-4 mb-2">
@@ -347,12 +356,12 @@ export default function Checkout() {
                            Pokaż najbliższe paczkomaty
                          </button>
 
-                         {/* Geowidget renders ONLY after successful search */}
-                         {mapCoordinates && (
+                         {/* Geowidget renders ONLY after the FIRST successful search and stays stable */}
+                         {hasSearched && (
                            <div className="pt-6 mt-6 border-t border-[#EAE6DF]">
-                             <p className="text-sm text-[#737373] mb-4">Wybierz punkt z mapy bezpośrednio poniżej:</p>
+                             <p className="text-sm font-medium text-[#1A1A1A] mb-4">Wybierz punkt z listy pod mapą:</p>
                              <div 
-                               className="w-full h-[450px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative"
+                               className="w-full h-[500px] border border-[#EAE6DF] rounded-[16px] overflow-hidden bg-[#F7F6F4] relative"
                                dangerouslySetInnerHTML={{
                                  __html: `<inpost-geowidget token="${(import.meta.env.VITE_INPOST_GEO_TOKEN || '').trim()}" onpoint="handleInpostPoint" language="pl" config="parcelCollect"></inpost-geowidget>`
                                }}
