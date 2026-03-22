@@ -148,29 +148,53 @@ export default async function handler(req, res) {
 
 async function sendConfirmationEmail(order, host) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  if (!resendApiKey) return;
+  const fromAddress = 'Sleep Tape <zamowienia@sleeptape.pl>';
+  
+  console.log('[RESEND] --- Email Sending Step Started ---');
+  console.log('[RESEND] API Key exists:', !!resendApiKey);
+  console.log('[RESEND] Recipient:', order.email);
+  console.log('[RESEND] From address:', fromAddress);
 
-  const { Resend } = await import('resend');
-  const resend = new Resend(resendApiKey);
-
-  const baseUrl = host ? `https://${host}` : 'https://sleeptape.pl';
-  const trackUrl = order.deliveryMethod === 'Paczkomat InPost' 
-    ? `https://inpost.pl/sledzenie-przesylek?number=${order.trackingNumber}`
-    : `${baseUrl}/#track`;
-
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#F7F6F4;color:#1A1A1A;margin:0;padding:0}.container{max-width:600px;margin:0 auto;padding:40px 20px}.header{text-align:center;margin-bottom:40px}.logo{font-size:24px;font-weight:bold;letter-spacing:.2em;color:#1A1A1A;text-decoration:none}.card{background-color:#fff;border-radius:24px;padding:40px;border:1px solid #E6E2DA;box-shadow:0 4px 12px rgba(0,0,0,.03)}h1{font-size:28px;font-weight:300;margin-bottom:16px;color:#1A1A1A}p{font-size:16px;line-height:1.6;color:#737373;margin-bottom:24px}.order-summary{background-color:#F9F8F6;border-radius:16px;padding:24px;margin-bottom:32px;border:1px solid #F0EFE9}.summary-item{display:flex;justify-content:space-between;margin-bottom:12px;font-size:14px}.summary-label{color:#A3A3A3;font-weight:bold;text-transform:uppercase;font-size:10px;letter-spacing:.1em}.summary-value{color:#1A1A1A;font-weight:600}.tracking-box{text-align:center;padding:24px;border:2px dashed #E6E2DA;border-radius:16px;margin-bottom:32px}.tracking-label{font-size:11px;font-weight:bold;text-transform:uppercase;color:#A3A3A3;letter-spacing:.1em;margin-bottom:8px;display:block}.tracking-code{font-family:monospace;font-size:24px;font-weight:bold;color:#1A1A1A;letter-spacing:2px}.btn{display:inline-block;background-color:#1A1A1A;color:#fff!important;text-decoration:none;padding:18px 36px;border-radius:100px;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.15em;text-align:center;width:100%;box-sizing:border-box}.footer{text-align:center;margin-top:40px;font-size:12px;color:#A3A3A3}</style></head><body><div class="container"><div class="header"><div class="logo">SLEEP TAPE</div></div><div class="card"><h1>Płatność potwierdzona.</h1><p>Cześć ${order.firstName}, dziękujemy za Twoje zaufanie. Twoje zamówienie zostało przyjęte i przekazane do realizacji. Przygotujemy Twoją paczkę Sleep Tape tak szybko, jak to możliwe.</p><div class="tracking-box"><span class="tracking-label">Twój numer śledzenia</span><span class="tracking-code">${order.trackingNumber}</span></div><div class="order-summary"><div class="summary-item"><span class="summary-label">Pakiet</span><span class="summary-value">${order.packageName}</span></div><div class="summary-item"><span class="summary-label">Ilość</span><span class="summary-value">${order.quantity}</span></div><div class="summary-item"><span class="summary-label">Dostawa</span><span class="summary-value">${order.deliveryMethod}</span></div><div class="summary-item" style="border-top:1px solid #EAE6DF;padding-top:12px;margin-top:12px"><span class="summary-label" style="color:#1A1A1A">Razem</span><span class="summary-value" style="font-size:18px">${order.totalAmount.toFixed(2).replace('.',',')} zł</span></div></div><a href="${trackUrl}" class="btn">Śledź paczkę</a></div><div class="footer"><p>Pozdrawiamy,<br>Zespół Sleep Tape</p><p style="font-size:10px">W razie pytań napisz do nas odpowiadając na ten e-mail.</p></div></div></body></html>`;
+  if (!resendApiKey) {
+    console.error('[RESEND] ERROR: Missing RESEND_API_KEY in environment variables.');
+    return;
+  }
 
   try {
-    await resend.emails.send({
-      from: 'Sleep Tape <zamowienia@sleeptape.pl>',
+    const { Resend } = await import('resend');
+    const resend = new Resend(resendApiKey);
+
+    const baseUrl = host ? `https://${host}` : 'https://sleeptape.pl';
+    const trackUrl = order.deliveryMethod === 'Paczkomat InPost' 
+      ? `https://inpost.pl/sledzenie-przesylek?number=${order.trackingNumber}`
+      : `${baseUrl}/#track`;
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#F7F6F4;color:#1A1A1A;margin:0;padding:0}.container{max-width:600px;margin:0 auto;padding:40px 20px}.header{text-align:center;margin-bottom:40px}.logo{font-size:24px;font-weight:bold;letter-spacing:.2em;color:#1A1A1A;text-decoration:none}.card{background-color:#fff;border-radius:24px;padding:40px;border:1px solid #E6E2DA;box-shadow:0 4px 12px rgba(0,0,0,.03)}h1{font-size:28px;font-weight:300;margin-bottom:16px;color:#1A1A1A}p{font-size:16px;line-height:1.6;color:#737373;margin-bottom:24px}.order-summary{background-color:#F9F8F6;border-radius:16px;padding:24px;margin-bottom:32px;border:1px solid #F0EFE9}.summary-item{display:flex;justify-content:space-between;margin-bottom:12px;font-size:14px}.summary-label{color:#A3A3A3;font-weight:bold;text-transform:uppercase;font-size:10px;letter-spacing:.1em}.summary-value{color:#1A1A1A;font-weight:600}.tracking-box{text-align:center;padding:24px;border:2px dashed #E6E2DA;border-radius:16px;margin-bottom:32px}.tracking-label{font-size:11px;font-weight:bold;text-transform:uppercase;color:#A3A3A3;letter-spacing:.1em;margin-bottom:8px;display:block}.tracking-code{font-family:monospace;font-size:24px;font-weight:bold;color:#1A1A1A;letter-spacing:2px}.btn{display:inline-block;background-color:#1A1A1A;color:#fff!important;text-decoration:none;padding:18px 36px;border-radius:100px;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.15em;text-align:center;width:100%;box-sizing:border-box}.footer{text-align:center;margin-top:40px;font-size:12px;color:#A3A3A3}</style></head><body><div class="container"><div class="header"><div class="logo">SLEEP TAPE</div></div><div class="card"><h1>Płatność potwierdzona.</h1><p>Cześć ${order.firstName}, dziękujemy za Twoje zaufanie. Twoje zamówienie zostało przyjęte i przekazane do realizacji. Przygotujemy Twoją paczkę Sleep Tape tak szybko, jak to możliwe.</p><div class="tracking-box"><span class="tracking-label">Twój numer śledzenia</span><span class="tracking-code">${order.trackingNumber}</span></div><div class="order-summary"><div class="summary-item"><span class="summary-label">Pakiet</span><span class="summary-value">${order.packageName}</span></div><div class="summary-item"><span class="summary-label">Ilość</span><span class="summary-value">${order.quantity}</span></div><div class="summary-item"><span class="summary-label">Dostawa</span><span class="summary-value">${order.deliveryMethod}</span></div><div class="summary-item" style="border-top:1px solid #EAE6DF;padding-top:12px;margin-top:12px"><span class="summary-label" style="color:#1A1A1A">Razem</span><span class="summary-value" style="font-size:18px">${order.totalAmount.toFixed(2).replace('.',',')} zł</span></div></div><a href="${trackUrl}" class="btn">Śledź paczkę</a></div><div class="footer"><p>Pozdrawiamy,<br>Zespół Sleep Tape</p><p style="font-size:10px">W razie pytań napisz do nas odpowiadając na ten e-mail.</p></div></div></body></html>`;
+
+    console.log('[RESEND] Attempting to send email...');
+    const result = await resend.emails.send({
+      from: fromAddress,
       to: [order.email],
       subject: 'Dziękujemy za zamówienie – Sleep Tape',
       html: html,
     });
-    console.log('[RESEND] Email sent successfully');
+
+    console.log('[RESEND] Success Response:', JSON.stringify(result, null, 2));
+    
+    if (result.error) {
+      console.error('[RESEND] API returned an error:', JSON.stringify(result.error, null, 2));
+    } else {
+      console.log('[RESEND] Email sent successfully, ID:', result.data?.id);
+    }
+
   } catch (error) {
-    console.error('[RESEND] Failed to send email:', error);
+    console.error('[RESEND] FATAL ERROR during sending process:');
+    console.error(error);
+    if (error.response) {
+      console.error('[RESEND] Error Response Body:', error.response.body);
+    }
   }
+  console.log('[RESEND] --- Email Sending Step Finished ---');
 }
 
 async function sendDiscordNotification(embed) {
