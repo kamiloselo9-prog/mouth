@@ -119,14 +119,23 @@ export default function Checkout() {
 
   const handleSearchPaczkomat = async () => {
     setSearchError('');
-    if (!searchCity.trim() || !searchPostalCode.trim()) {
+    const city = searchCity.trim();
+    const postalCode = searchPostalCode.trim();
+
+    if (!city || !postalCode) {
       setSearchError('Wpisz miasto i kod pocztowy.');
+      return;
+    }
+
+    if (!/^\d{2}-\d{3}$/.test(postalCode)) {
+      setSearchError('Podaj poprawny kod pocztowy w formacie 00-000.');
       return;
     }
     
     setSearchLoading(true);
     try {
-      const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${encodeURIComponent(searchCity)}&postalcode=${encodeURIComponent(searchPostalCode)}&country=Poland`);
+      const combinedQuery = `${postalCode} ${city}, Polska`;
+      const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(combinedQuery)}`);
       const geoData = await geoResponse.json();
       
       if (geoData && geoData.length > 0) {
@@ -144,7 +153,7 @@ export default function Checkout() {
           setSearchError('Brak paczkomatów w pobliżu tej lokalizacji.');
         }
       } else {
-        setSearchError('Nie udało się znaleźć lokalizacji. Sprawdź kod pocztowy i miasto.');
+        setSearchError('Nie udało się znaleźć dokładnej lokalizacji. Sprawdź kod pocztowy i miasto.');
       }
     } catch (err) {
       console.error('Błąd wyszukiwania:', err);
