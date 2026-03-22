@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -76,7 +77,11 @@ export default async function handler(req, res) {
       console.log(`[WEBHOOK] Retrieved ${lineItems.length} line items.`);
       
       const products = lineItems.filter(item => !item.description.startsWith('Dostawa:'));
-      const productDescriptions = products.map(p => `${p.description} (Ilość: ${p.quantity})`).join('\n');
+      const productDescriptions = products.map(p => `${p.description}`).join(' | ');
+      const totalQuantity = products.reduce((acc, p) => acc + p.quantity, 0);
+      
+      const deliveryItem = lineItems.find(item => item.description.startsWith('Dostawa:'));
+      const shippingCost = deliveryItem ? deliveryItem.amount_total / 100 : 0;
       
       const metadata = session.metadata || {};
       console.log('[WEBHOOK] Metadata extracted:', JSON.stringify(metadata));
@@ -104,7 +109,7 @@ export default async function handler(req, res) {
           },
           {
             name: "Produkt",
-            value: productDescriptions || 'Brak',
+            value: products.map(p => `${p.description} (Ilość: ${p.quantity})`).join('\n') || 'Brak',
             inline: false
           },
           {
@@ -136,6 +141,45 @@ export default async function handler(req, res) {
 
       console.log('[WEBHOOK] Before sending Discord notification...');
       await sendDiscordNotification(embed);
+
+      // --- SUPABASE EXACT LOGIC ---
+      console.log('[WEBHOOK] Saving order to Supabase...');
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
+      
+      if (supabaseUrl && supabaseKey) {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const trackingNumber = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+        const orderData = {
+          orderId: session.id,
+          email: metadata.email || session.customer_details?.email,
+          firstName: metadata.first_name || '',
+          lastName: metadata.last_name || '',
+          phone: metadata.phone || '',
+          packageName: productDescriptions,
+          quantity: totalQuantity,
+          deliveryMethod: metadata.delivery_method || 'Nieznana',
+          shippingCost: shippingCost,
+          totalAmount: parseFloat(amountTotal),
+          inpostPointName: metadata.paczkomat_name || null,
+          inpostPointAddress: metadata.paczkomat_address ? `${metadata.paczkomat_address}, ${metadata.paczkomat_city}` : null,
+          courierAddress: metadata.street ? `${metadata.street}, ${metadata.postal_code} ${metadata.city}` : null,
+          trackingNumber: trackingNumber,
+          status: 'W trakcie realizacji',
+          createdAt: new Date().toISOString()
+        };
+
+        const { error: dbError } = await supabase.from('orders').insert([orderData]);
+        if (dbError) {
+          console.error('[SUPABASE] Failed to insert order:', dbError);
+        } else {
+          console.log('[SUPABASE] Successfully saved order to database');
+        }
+      } else {
+        console.warn('[SUPABASE] Missing SUPABASE_URL or SUPABASE_KEY. Skipping DB insert.');
+      }
+      // --- END SUPABASE SUPABASE LOGIC ---
 
     } catch (err) {
       console.error('[WEBHOOK] Error handling checkout.session.completed:', err);
