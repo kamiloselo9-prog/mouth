@@ -14,6 +14,7 @@ import Checkout from './components/Checkout';
 import Cart from './components/Cart';
 import CheckoutSuccess from './components/CheckoutSuccess';
 import TrackOrder from './components/TrackOrder';
+import AdminPanel from './components/AdminPanel';
 
 function App() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -97,6 +98,10 @@ function App() {
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
+
+  if (currentHash === '#admin') {
+    return <AdminPanel />;
+  }
 
   if (currentHash.startsWith('#success')) {
     return <CheckoutSuccess />;
