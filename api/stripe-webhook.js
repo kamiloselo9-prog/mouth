@@ -148,7 +148,7 @@ export default async function handler(req, res) {
 
 async function sendConfirmationEmail(order, host) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const fromAddress = 'Sleep Tape <zamowienia@sleeptape.pl>';
+  const fromAddress = 'Sleep Tape <zamowienia@sleepfix.pl>';
   
   console.log('[RESEND] --- Email Sending Step Started ---');
   console.log('[RESEND] API Key exists:', !!resendApiKey);
@@ -164,7 +164,7 @@ async function sendConfirmationEmail(order, host) {
     const { Resend } = await import('resend');
     const resend = new Resend(resendApiKey);
 
-    const baseUrl = host ? `https://${host}` : 'https://sleeptape.pl';
+    const baseUrl = host ? `https://${host}` : 'https://sleepfix.pl';
     const trackUrl = order.deliveryMethod === 'Paczkomat InPost' 
       ? `https://inpost.pl/sledzenie-przesylek?number=${order.trackingNumber}`
       : `${baseUrl}/#track`;
