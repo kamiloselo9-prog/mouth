@@ -1,10 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminPassword = process.env.ADMIN_PANEL_PASSWORD || process.env.ADMIN_PASSWORD;
   const providedPassword = req.headers['x-admin-password'];
+  
+  // Use regex to parse cookies safely without extra libs if needed (already installed cookie, but here we read it)
+  const cookies = (req.headers.cookie || '').split(';').reduce((acc, c) => {
+    const [key, val] = c.trim().split('=');
+    acc[key] = val;
+    return acc;
+  }, {});
 
-  if (!adminPassword || providedPassword !== adminPassword) {
+  const sessionPassword = cookies['admin_session'];
+
+  if (!adminPassword || (providedPassword !== adminPassword && sessionPassword !== adminPassword)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
