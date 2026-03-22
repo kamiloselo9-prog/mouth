@@ -1,0 +1,151 @@
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2023-10-16',
+});
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+async function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let rawBody = '';
+    req.on('data', (chunk) => {
+      rawBody += chunk;
+    });
+    req.on('end', () => {
+      resolve(Buffer.from(rawBody));
+    });
+    req.on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const payloadString = await getRawBody(req);
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+    if (endpointSecret && sig) {
+      event = stripe.webhooks.constructEvent(payloadString.toString(), sig, endpointSecret);
+    } else {
+      // Fallback if secret not available
+      event = JSON.parse(payloadString.toString());
+    }
+  } catch (err) {
+    console.error(`Webhook Error: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+
+    try {
+      const sessionWithLineItems = await stripe.checkout.sessions.retrieve(session.id, {
+        expand: ['line_items'],
+      });
+      
+      const lineItems = sessionWithLineItems.line_items.data;
+      
+      const products = lineItems.filter(item => !item.description.startsWith('Dostawa:'));
+      
+      const productDescriptions = products.map(p => `${p.description} (Ilość: ${p.quantity})`).join('\n');
+      
+      const metadata = session.metadata || {};
+      const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00';
+      
+      const embed = {
+        title: "🛒 Nowe zamówienie – Sleep Tape",
+        color: 0x1A1A1A,
+        fields: [
+          {
+            name: "Klient",
+            value: `${metadata.first_name || ''} ${metadata.last_name || ''}`.trim() || 'Brak',
+            inline: true
+          },
+          {
+            name: "Email",
+            value: metadata.email || 'Brak',
+            inline: true
+          },
+          {
+            name: "Telefon",
+            value: metadata.phone || 'Brak',
+            inline: true
+          },
+          {
+            name: "Produkt",
+            value: productDescriptions || 'Brak',
+            inline: false
+          },
+          {
+            name: "Kwota",
+            value: `${amountTotal} zł`,
+            inline: true
+          },
+          {
+            name: "Dostawa",
+            value: metadata.delivery_method || 'Brak',
+            inline: true
+          }
+        ]
+      };
+      
+      if (metadata.paczkomat_name) {
+        embed.fields.push({
+          name: "Paczkomat",
+          value: `Nazwa: ${metadata.paczkomat_name}\nAdres: ${metadata.paczkomat_address}`,
+          inline: false
+        });
+      } else if (metadata.street) {
+        embed.fields.push({
+          name: "Adres (Kurier)",
+          value: `${metadata.street}\n${metadata.postal_code} ${metadata.city}`,
+          inline: false
+        });
+      }
+
+      await sendDiscordNotification(embed);
+
+    } catch (err) {
+      console.error('Error handling checkout.session.completed:', err);
+    }
+  }
+
+  res.status(200).json({ received: true });
+}
+
+async function sendDiscordNotification(embed) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.error('No DISCORD_WEBHOOK_URL found in environment.');
+    return;
+  }
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error(`Discord webhook failed with status ${response.status}: ${text}`);
+    } else {
+      console.log('Successfully sent Discord notification.');
+    }
+  } catch (error) {
+    console.error('Failed to send Discord notification:', error);
+  }
+}
