@@ -23,6 +23,7 @@ export default function Footer() {
           <h4 className="text-xs uppercase tracking-[0.2em] font-bold mb-8 text-[#737373]">Wsparcie</h4>
           <ul className="space-y-5">
             <li><a href="#faq" className="text-base text-[#E6E2DA] hover:text-white transition-colors">FAQ</a></li>
+            <li><a href="#track" className="text-base font-bold text-white transition-colors flex items-center gap-2">Śledź zamówienie <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span></a></li>
             <li><a href="#" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Dostawa & Zwroty</a></li>
             <li><a href="#" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Napisz do nas</a></li>
           </ul>

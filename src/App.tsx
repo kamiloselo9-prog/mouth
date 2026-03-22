@@ -13,6 +13,7 @@ import ProductDetails from './components/ProductDetails';
 import Checkout from './components/Checkout';
 import Cart from './components/Cart';
 import CheckoutSuccess from './components/CheckoutSuccess';
+import TrackOrder from './components/TrackOrder';
 
 function App() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -97,8 +98,18 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  if (currentHash === '#success') {
+  if (currentHash.startsWith('#success')) {
     return <CheckoutSuccess />;
+  }
+
+  if (currentHash === '#track') {
+    return (
+      <div className="bg-[#F7F6F4] text-[#1A1A1A] font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
+        <Header />
+        <TrackOrder />
+        <Footer />
+      </div>
+    );
   }
 
   if (currentHash === '#cart') {

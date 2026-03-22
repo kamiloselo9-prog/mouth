@@ -69,7 +69,7 @@ export default async function handler(req, res) {
       payment_method_types: ['card', 'blik', 'p24'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${origin}/#success`,
+      success_url: `${origin}/#success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/#cart`,
       payment_intent_data: {
         metadata: metadata
