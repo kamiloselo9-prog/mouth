@@ -169,7 +169,97 @@ async function sendConfirmationEmail(order, host) {
       ? `https://inpost.pl/sledzenie-przesylek?number=${order.trackingNumber}`
       : `${baseUrl}/#track`;
 
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background-color:#F7F6F4;color:#1A1A1A;margin:0;padding:0}.container{max-width:600px;margin:0 auto;padding:40px 20px}.header{text-align:center;margin-bottom:40px}.logo{font-size:24px;font-weight:bold;letter-spacing:.2em;color:#1A1A1A;text-decoration:none}.card{background-color:#fff;border-radius:24px;padding:40px;border:1px solid #E6E2DA;box-shadow:0 4px 12px rgba(0,0,0,.03)}h1{font-size:28px;font-weight:300;margin-bottom:16px;color:#1A1A1A}p{font-size:16px;line-height:1.6;color:#737373;margin-bottom:24px}.order-summary{background-color:#F9F8F6;border-radius:16px;padding:24px;margin-bottom:32px;border:1px solid #F0EFE9}.summary-item{display:flex;justify-content:space-between;margin-bottom:12px;font-size:14px}.summary-label{color:#A3A3A3;font-weight:bold;text-transform:uppercase;font-size:10px;letter-spacing:.1em}.summary-value{color:#1A1A1A;font-weight:600}.tracking-box{text-align:center;padding:24px;border:2px dashed #E6E2DA;border-radius:16px;margin-bottom:32px}.tracking-label{font-size:11px;font-weight:bold;text-transform:uppercase;color:#A3A3A3;letter-spacing:.1em;margin-bottom:8px;display:block}.tracking-code{font-family:monospace;font-size:24px;font-weight:bold;color:#1A1A1A;letter-spacing:2px}.btn{display:inline-block;background-color:#1A1A1A;color:#fff!important;text-decoration:none;padding:18px 36px;border-radius:100px;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.15em;text-align:center;width:100%;box-sizing:border-box}.footer{text-align:center;margin-top:40px;font-size:12px;color:#A3A3A3}</style></head><body><div class="container"><div class="header"><div class="logo">SLEEP TAPE</div></div><div class="card"><h1>Płatność potwierdzona.</h1><p>Cześć ${order.firstName}, dziękujemy za Twoje zaufanie. Twoje zamówienie zostało przyjęte i przekazane do realizacji. Przygotujemy Twoją paczkę Sleep Tape tak szybko, jak to możliwe.</p><div class="tracking-box"><span class="tracking-label">Twój numer śledzenia</span><span class="tracking-code">${order.trackingNumber}</span></div><div class="order-summary"><div class="summary-item"><span class="summary-label">Pakiet</span><span class="summary-value">${order.packageName}</span></div><div class="summary-item"><span class="summary-label">Ilość</span><span class="summary-value">${order.quantity}</span></div><div class="summary-item"><span class="summary-label">Dostawa</span><span class="summary-value">${order.deliveryMethod}</span></div><div class="summary-item" style="border-top:1px solid #EAE6DF;padding-top:12px;margin-top:12px"><span class="summary-label" style="color:#1A1A1A">Razem</span><span class="summary-value" style="font-size:18px">${order.totalAmount.toFixed(2).replace('.',',')} zł</span></div></div><a href="${trackUrl}" class="btn">Śledź paczkę</a></div><div class="footer"><p>Pozdrawiamy,<br>Zespół Sleep Tape</p><p style="font-size:10px">W razie pytań napisz do nas odpowiadając na ten e-mail.</p></div></div></body></html>`;
+    const html = `
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dziękujemy za zamówienie – Sleep Tape</title>
+  <style>
+    body { background-color: #ffffff; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .container { max-width: 520px; margin: 0 auto; padding: 60px 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .logo { text-align: center; font-size: 20px; font-weight: 700; letter-spacing: 0.3em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 8px; }
+    .header-sub { text-align: center; font-size: 13px; color: #86868b; letter-spacing: 0.05em; margin-bottom: 60px; }
+    .title { text-align: center; font-size: 32px; font-weight: 600; color: #1d1d1f; line-height: 1.2; margin-bottom: 16px; letter-spacing: -0.02em; }
+    .subtitle { text-align: center; font-size: 16px; color: #515154; margin-bottom: 50px; line-height: 1.5; }
+    .card { background-color: #f5f5f7; border-radius: 24px; padding: 40px; margin-bottom: 40px; text-align: center; }
+    .label { font-size: 11px; font-weight: 700; color: #86868b; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+    .tracking-number { font-size: 28px; font-weight: 700; color: #1d1d1f; letter-spacing: 0.05em; margin-bottom: 12px; }
+    .tracking-hint { font-size: 13px; color: #86868b; }
+    .summary-card { padding: 8px 0; margin-bottom: 50px; border-top: 1px solid #eeeeee; border-bottom: 1px solid #eeeeee; }
+    .row { display: block; padding: 16px 0; overflow: hidden; }
+    .row-label { float: left; font-size: 14px; color: #86868b; font-weight: 400; }
+    .row-value { float: right; font-size: 14px; color: #1d1d1f; font-weight: 600; text-align: right; }
+    .total-row { border-top: 1px solid #eeeeee; margin-top: 8px; padding-top: 24px; }
+    .total-label { float: left; font-size: 16px; color: #1d1d1f; font-weight: 600; }
+    .total-value { float: right; font-size: 22px; color: #1d1d1f; font-weight: 700; }
+    .btn-container { text-align: center; margin: 50px 0; }
+    .btn { background-color: #1d1d1f; color: #ffffff !important; text-decoration: none; padding: 22px 50px; border-radius: 999px; font-weight: 600; font-size: 14px; display: inline-block; letter-spacing: 0.08em; transition: opacity 0.2s; }
+    .trust-section { text-align: center; padding-top: 20px; margin-bottom: 60px; }
+    .trust-item { display: inline-block; font-size: 12px; color: #86868b; margin: 0 12px; }
+    .footer { text-align: center; border-top: 1px solid #eeeeee; padding-top: 50px; }
+    .footer-text { font-size: 13px; color: #86868b; line-height: 1.8; margin-bottom: 24px; }
+    .signature { font-size: 14px; font-weight: 600; color: #1d1d1f; }
+    @media only screen and (max-width: 480px) {
+      .title { font-size: 26px; }
+      .card { padding: 30px 20px; }
+      .tracking-number { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Sleep Tape</div>
+    <div class="header-sub">Dziękujemy za Twoje zamówienie</div>
+
+    <h1 class="title">Twoje zamówienie zostało potwierdzone</h1>
+    <p class="subtitle">Dziękujemy za zaufanie. Twoje zamówienie jest właśnie przygotowywane do wysyłki.</p>
+
+    <div class="card">
+      <div class="label">Numer śledzenia</div>
+      <div class="tracking-number">${order.trackingNumber}</div>
+      <div class="tracking-hint">Status przesyłki możesz sprawdzić w dowolnym momencie</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="row">
+        <span class="row-label">Produkt</span>
+        <span class="row-value">${order.packageName}</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Ilość</span>
+        <span class="row-value">${order.quantity} szt.</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Dostawa</span>
+        <span class="row-value">${order.deliveryMethod}</span>
+      </div>
+      <div class="row total-row">
+        <span class="total-label">Razem</span>
+        <span class="total-value">${order.totalAmount.toFixed(2).replace('.', ',')} zł</span>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+
+    <div class="btn-container">
+      <a href="${trackUrl}" class="btn">ŚLEDŹ PACZKĘ</a>
+    </div>
+
+    <div class="trust-section">
+      <span class="trust-item">✔ Bezpieczne płatności</span>
+      <span class="trust-item">✔ Wysyłka w 24h</span>
+      <span class="trust-item">✔ 14 dni na zwrot</span>
+    </div>
+
+    <div class="footer">
+      <p class="footer-text">Masz pytania? Odpowiedz na tego maila – chętnie pomożemy. Przyjemnej regeneracji!</p>
+      <div class="signature">Zespół Sleep Tape</div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
 
     console.log('[RESEND] Attempting to send email...');
     const result = await resend.emails.send({
