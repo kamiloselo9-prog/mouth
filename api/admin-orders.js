@@ -48,24 +48,36 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing order ID' });
     }
 
+    const trimmedId = id.trim();
+    console.log(`[ADMIN-UPDATE] Attempting to update order: ${trimmedId}`);
+
     try {
       const updateData = {};
       if (status) updateData.status = status;
       if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
       if (note !== undefined) updateData.note = note;
 
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from('orders')
         .update(updateData)
-        .eq('orderId', id)
-        .select()
-        .single();
+        .eq('orderId', trimmedId)
+        .select();
 
-      if (error) throw error;
-      return res.status(200).json(data);
+      if (error) {
+        console.error('[SUPABASE-ERROR]', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.warn(`[ADMIN-UPDATE] No order found with ID: ${trimmedId}`);
+        return res.status(404).json({ error: 'Nie znaleziono zamówienia w bazie' });
+      }
+
+      console.log(`[ADMIN-UPDATE] Successfully updated ${data.length} row(s)`);
+      return res.status(200).json(data[0]);
     } catch (err) {
       console.error('Admin update error:', err);
-      return res.status(500).json({ error: 'Failed to update order' });
+      return res.status(500).json({ error: 'Wystąpił błąd podczas aktualizacji zamówienia' });
     }
   }
 
