@@ -489,8 +489,8 @@ export default function Checkout() {
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <>
-                        Zapłać z P24 / Blik <div className="w-px h-4 bg-white/20 mx-1 hidden sm:block"></div> 
-                        <span className="hidden sm:inline font-normal text-sm lowercase opacity-80">(Stripe)</span>
+                        Szybka płatność <div className="w-px h-4 bg-white/20 mx-1 hidden sm:block"></div> 
+                        <span className="hidden sm:inline font-normal text-sm lowercase opacity-80">(Stripe / Blik / Karta)</span>
                       </>
                     )}
                  </button>

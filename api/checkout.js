@@ -66,7 +66,10 @@ export default async function handler(req, res) {
     }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'blik', 'p24'],
+      // Using automatic_payment_methods ensures that Stripe only shows 
+      // payment methods that are currently enabled in your Stripe Dashboard.
+      // This solves the 'p24 is invalid' error when that method is disabled.
+      automatic_payment_methods: { enabled: true },
       line_items: lineItems,
       mode: 'payment',
       success_url: `${origin}/#success?session_id={CHECKOUT_SESSION_ID}`,
