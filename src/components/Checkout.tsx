@@ -4,8 +4,8 @@ import { ShieldCheck, ArrowLeft, Truck, MapPin, Package, Loader2 } from 'lucide-
 import { useCart } from '../store/useCart';
 
 const deliveryMethods = [
-  { id: 'inpost', name: 'Paczkomat InPost', price: 12.99, icon: BoxIcon },
-  { id: 'courier', name: 'Kurier', price: 14.99, icon: TruckIcon },
+  { id: 'inpost', name: 'Paczkomat InPost', price: 0, icon: BoxIcon },
+  { id: 'courier', name: 'Kurier', price: 0, icon: TruckIcon },
 ];
 
 function BoxIcon(props: any) {
@@ -260,10 +260,10 @@ export default function Checkout() {
                          {isActive && <div className="w-2 h-2 bg-white rounded-full"></div>}
                        </div>
                        <Icon className={`w-6 h-6 ${isActive ? 'text-[#1A1A1A]' : 'text-[#A3A3A3]'}`} strokeWidth={1.5} />
-                       <div className="flex-grow">
-                         <div className="font-semibold text-[#1A1A1A] text-[15px]">{method.name}</div>
-                         <div className="text-[#737373] text-sm">{method.price.toFixed(2).replace('.', ',')} zł</div>
-                       </div>
+                        <div className="flex-grow">
+                          <div className="font-semibold text-[#1A1A1A] text-[15px]">{method.name}</div>
+                          <div className="text-[#10B981] font-bold text-sm uppercase tracking-wider">Darmowa</div>
+                        </div>
                      </div>
                    </div>
                  )
@@ -454,10 +454,10 @@ export default function Checkout() {
                    <span>Wartość produktów</span>
                    <span>{cartTotal.toFixed(2).replace('.', ',')} zł</span>
                  </div>
-                 <div className="flex justify-between items-center text-[15px] text-[#404040] font-light">
-                   <span>Dostawa ({delivery.name})</span>
-                   <span>{delivery.price.toFixed(2).replace('.', ',')} zł</span>
-                 </div>
+                  <div className="flex justify-between items-center text-[15px] text-[#404040] font-light">
+                    <span>Dostawa ({delivery.name})</span>
+                    <span className="text-[#10B981] font-bold uppercase text-xs tracking-widest">Darmowa</span>
+                  </div>
                  
                  {/* Dodanie wybranego punktu InPost do Summary */}
                  {delivery.id === 'inpost' && selectedPoint && (

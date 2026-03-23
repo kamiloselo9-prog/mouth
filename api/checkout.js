@@ -34,7 +34,7 @@ export default async function handler(req, res) {
       quantity: item.quantity,
     }));
 
-    if (delivery) {
+    if (delivery && delivery.price > 0) {
        lineItems.push({
          price_data: {
            currency: 'pln',

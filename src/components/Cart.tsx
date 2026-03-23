@@ -96,7 +96,7 @@ export default function Cart() {
                      <span>{total.toFixed(2).replace('.', ',')} zł</span>
                   </div>
                   <div className="flex justify-between text-[#404040]">
-                     <span>Wysyłka wyliczana po wybraniu opcji dostawy</span>
+                     <span className="text-[#10B981] font-bold uppercase text-xs tracking-widest">Wysyłka: Darmowa</span>
                   </div>
                 </div>
 
