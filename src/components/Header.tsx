@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '../store/useCart';
 import { motion, useScroll } from 'framer-motion';
+import PromoBanner from './PromoBanner';
 
-export default function Header() {
+export default function Header({ isHomepage = false }: { isHomepage?: boolean }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getCartCount } = useCart();
@@ -21,11 +22,15 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out px-6 ${
-        isScrolled ? 'py-4 bg-white/80 backdrop-blur-xl ' : 'py-6 bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        isScrolled ? 'bg-white/80 backdrop-blur-xl ' : 'bg-transparent'
       }`}
     >
-      <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+      {isHomepage && <PromoBanner />}
+      
+      <div className={`max-w-[1400px] mx-auto flex items-center justify-between px-6 transition-all duration-500 ${
+        isScrolled ? 'py-4' : 'py-6'
+      }`}>
         <a href="#" className="text-xl font-medium tracking-[0.2em] text-[#1A1A1A] hover:opacity-70 transition-opacity">
           SLEEP TAPE
         </a>

@@ -29,7 +29,7 @@ export default function Hero() {
           Jest przymocowany sztywno do końca sekcji, przez co nie ukazuje szarpania przy animacji parallax. */}
       <div className="absolute bottom-0 left-0 right-0 h-48 sm:h-64 bg-gradient-to-t from-[#F7F6F4] via-[#F7F6F4]/90 to-transparent z-[5] pointer-events-none"></div>
 
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-28 pb-10">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 pt-36 pb-10">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

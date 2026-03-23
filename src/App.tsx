@@ -110,7 +110,7 @@ function App() {
   if (currentHash === '#track') {
     return (
       <div className="bg-[#F7F6F4] text-[#1A1A1A] font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
-        <Header />
+        <Header isHomepage={false} />
         <TrackOrder />
         <Footer />
       </div>
@@ -120,7 +120,7 @@ function App() {
   if (currentHash === '#cart') {
     return (
       <div className="bg-[#F7F6F4] text-[#1A1A1A] font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
-        <Header />
+        <Header isHomepage={false} />
         <Cart />
         <Footer />
       </div>
@@ -134,7 +134,7 @@ function App() {
   if (currentHash === '#product') {
     return (
       <div className="bg-[#F7F6F4] text-[#1A1A1A] font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
-        <Header />
+        <Header isHomepage={false} />
         <ProductDetails />
         <Footer />
       </div>
@@ -145,7 +145,7 @@ function App() {
     <div className="bg-[var(--color-brand-bg)] text-[#1A1A1A] font-sans antialiased overflow-x-hidden relative">
       {!isMobile && <div style={{ height: contentHeight }} />}
 
-      <Header />
+      <Header isHomepage={true} />
       
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-[#EAE6DF] opacity-40 blur-[150px] animate-breath"></div>
