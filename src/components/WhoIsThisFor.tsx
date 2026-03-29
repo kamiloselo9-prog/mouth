@@ -22,7 +22,7 @@ export default function WhoIsThisFor() {
           </span>
           <h2 className="text-4xl md:text-[56px] font-light mb-8 tracking-tight">Dla tych, którzy odmawiają kompromisów.</h2>
           <p className="text-[#9CA3AF] max-w-3xl mx-auto text-xl font-light leading-relaxed mb-20">
-            Niezależnie od tego, czy zależy Ci na ekstremalnej wydajności w pracy, eliminacji uciążliwego chrapania dla partnera, czy po prostu na końcu koszmarnej suchości rano.
+            Niezależnie od tego, czy zależy Ci na pięknym uśmiechu przed ważnym spotkaniem, usunięciu wieloletnich przebarwień z kawy na co dzień, czy po prostu zdrowej i czystej bieli.
           </p>
         </motion.div>
 
@@ -44,8 +44,8 @@ export default function WhoIsThisFor() {
            >
              <Smile className="w-8 h-8 mb-8 text-white/80" strokeWidth={1.5} />
              <div>
-               <h4 className="font-semibold text-lg mb-2">Głośno Chrapiący</h4>
-               <p className="text-sm text-[#9CA3AF] font-light">Zminimalizuj uciążliwe dźwięki, które niszczą jakość snu Twoją i Twojego partnera.</p>
+               <h4 className="font-semibold text-lg mb-2">Miłośnicy Kawy</h4>
+               <p className="text-sm text-[#9CA3AF] font-light">Zminimalizuj uporczywe plamy, które negatywnie wpływają na estetykę Twojego uśmiechu i pewność siebie.</p>
              </div>
            </motion.div>
 

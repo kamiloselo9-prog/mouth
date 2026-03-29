@@ -1,23 +1,23 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { Moon, Wind, ShieldCheck } from 'lucide-react';
+import { Sparkles, CheckCircle, ShieldCheck } from 'lucide-react';
 import WaveSeparator from './WaveSeparator';
 
 const benefits = [
   {
-    icon: <Moon className="w-8 h-8" strokeWidth={1.5} />,
-    title: "Głęboki sen REM",
-    description: "Zmusza organizm do oddychania przez nos, co drastycznie zwiększa produkcję tlenku azotu i wydłuża fazy głębokiego snu."
+    icon: <Sparkles className="w-8 h-8" strokeWidth={1.5} />,
+    title: "Skutecznie redukcja plam",
+    description: "Aktywnie usuwa lata uporczywych przebarwień, które powstawają przez regularne picie kawy, herbaty czy wina."
   },
   {
-    icon: <Wind className="w-8 h-8" strokeWidth={1.5} />,
-    title: "Noce bez chrapania",
-    description: "Mechanicznie zapobiega otwieraniu się ust, skutecznie redukując lub całkowicie eliminując problem chrapania."
+    icon: <CheckCircle className="w-8 h-8" strokeWidth={1.5} />,
+    title: "Technologia Dry Strip",
+    description: "Paski bardzo łatwo się aplikują i bezpiecznie przylegają do zębów. Nie zsuwają się podczas użytkowania."
   },
   {
     icon: <ShieldCheck className="w-8 h-8" strokeWidth={1.5} />,
-    title: "Bezpieczny dla skóry",
-    description: "Medyczny, hipoalergiczny klej, który zdejmuje się rano bezboleśnie, nie zostawiając żadnych śladów na twarzy."
+    title: "Delikatne dla szkliwa",
+    description: "Składniki specjalnie opracowane tak, by wspomagać usuwanie plam w zaciszu domowym w bezpieczny sposób."
   }
 ];
 
@@ -38,11 +38,11 @@ export default function Benefits() {
           className="text-center mb-32"
         >
           <span className="inline-block px-5 py-2 bg-[#EAE6DF]/50 text-[#1A1A1A] rounded-full text-[10px] uppercase font-bold tracking-[0.2em] mb-6 border border-[#E6E2DA]">
-              Nauka o śnie
+              Krok Pielęgnacyjny
           </span>
-          <h2 className="text-4xl md:text-[56px] font-light mb-8 text-[#1A1A1A] tracking-tight">Zaprojektowane dla głębokiej odnowy.</h2>
+          <h2 className="text-4xl md:text-[56px] font-light mb-8 text-[#1A1A1A] tracking-tight">Zaprojektowane dla Twojego uśmiechu.</h2>
           <p className="text-[#737373] max-w-2xl mx-auto text-xl font-light leading-relaxed">
-            Przeprojektowaliśmy nocne oddychanie. Zmień fragmentowany, płytki sen w głęboką, nieprzerwaną regenerację Twojego ciała.
+            Guru Nanda to idealne rozwiązanie dla osób, które pragną uzyskać zauważalnie jaśniejszy i naturalnie piękny uśmiech, bez wizyty u dentysty.
           </p>
         </motion.div>
 

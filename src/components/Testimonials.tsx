@@ -2,14 +2,14 @@ import { motion } from 'framer-motion';
 
 const testimonials = [
   { 
-    quote: "Testowałem trackery i setki supli. Nic tak bardzo nie zboostowało mojego snu głębokiego, jak po prostu wmuszenie nosowego oddechu tą taśmą.", 
+    quote: "Testowałem różne węgielki i setki past. Nic tak bardzo nie poprawiło odcienia moich zębów, jak prosta kuracja tymi paskami z technologią dry strip.",
     author: "Michał T.", 
     role: "Przedsiębiorca & Biohaker",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
     verified: true 
   },
   { 
-    quote: "Klej jest bezbłędny. Brak podrażnień rano, brak śladów, a chłopak ostatecznie przestał narzekać na moje chrapanie.", 
+    quote: "Są bezbłędne. Brak nadwrażliwości szkliwa i dziąseł, no i co ważne, kawa czy herbata wreszcie nie barwi mi zębów tak bardzo.", 
     author: "Oliwia W.", 
     role: "Trener Personalny",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150",

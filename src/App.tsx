@@ -1,4 +1,5 @@
 import { motion, useScroll, useSpring, useTransform, animate } from 'framer-motion';
+import { Analytics } from "@vercel/analytics/react";
 import { useEffect, useRef, useState } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -15,6 +16,7 @@ import Cart from './components/Cart';
 import CheckoutSuccess from './components/CheckoutSuccess';
 import TrackOrder from './components/TrackOrder';
 import AdminPanel from './components/AdminPanel';
+import Modal from './components/Modal';
 
 function App() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -166,6 +168,8 @@ function App() {
         <FinalCTA />
         <Footer />
       </motion.div>
+      <Modal />
+      <Analytics />
     </div>
   );
 }

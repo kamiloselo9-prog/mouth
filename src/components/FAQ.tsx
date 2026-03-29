@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 const faqs = [
-  { question: 'Czy bezpiecznie jest zaklejać usta na noc?', answer: 'Tak. Wbrew pozorom, ludzkie ciało jest naturalnie przystosowane do oddychania przez nos podczas snu, a usta służą głównie do spożywania posiłków i mówienia. Nasza taśma jest w pełni bezpieczna, a dzięki otworowi na środku, pozwala na minimalny przepływ powietrza, więc nie ma uczucia uwięzienia.' },
-  { question: 'A co jeśli obudzę się w nocy, z zatkanym nosem?', answer: 'Drobny katar to często objaw przewlekłego oddychania ustami. Paradoksalnie, wymuszenie oddechu nosowego poprzez taśmę u wielu osób udrażnia drogi oddechowe po kilku minutach (tzw. zjawisko tlenku azotu). Jeśli dyskomfort jest zbyt duży, jednym pociągnięciem palca ściągasz taśmę.' },
-  { question: 'Czy zrywanie tego rano bardzo boli?', answer: 'Absolutnie nie! I to jest jedna z głównych różnic. Używamy specjalistycznego hipoalergicznego kleju żelowego. Taśma chwyta pewnie przez całą noc, ale rano zdejmujesz ją jednym delikatnym ruchem, nie rwie ona skóry ani zarostu.' },
-  { question: 'Mam brodę lub wąsy, czy klej chwyci?', answer: 'Przy gęstym zaroście klej ma nieco utrudnione zadanie, ale wystarczy lekko ułożyć wąsy i umieścić pasek poziomo by skleił obie wargi bezpośrednio. Dla najlepszego efektu upewnij się, że zarost jest na 100% suchy, bez żadnych olejków tuż przed snem.' },
-  { question: 'Po jakim czasie odczuję różnicę podczas dnia?', answer: 'Od pierwszego użycia. Koniec z suchością w ustach czuć od razu. Poprawa parametrów głębokiego snu z reguły normuje się po pierwszych 3 nocach, jak tylko Twoje ciało zaadaptuje się do nowej, prawidłowej ruty.' }
+  { question: 'Czy bezpiecznie jest używać pasków wybielających w domu?', answer: 'Tak. Paski Guru Nanda zostały zaprojektowane przez profesjonalistów z myślą o maksymalnym bezpieczeństwie dla szkliwa, dzięki czemu możesz osiągnąć dentystyczny efekt bezpiecznie i samodzielnie.' },
+  { question: 'Czy moje zęby staną się nadwrażliwe?', answer: 'Innowacyjna formuła nie zawiera bardzo inwazyjnych utleniaczy, które często powodują dyskomfort i nadwrażliwość na zimno. Kuracja jest delikatna, a zarazem skuteczna.' },
+  { question: 'Czy paski przesuwają się pod wpływem śliny?', answer: 'Absolutnie nie! To jedna z różnic pomiędzy tanimi plastrami z apteki. Wykorzystujemy technologię dry strip, więc paski przylegają z całej siły bez względu na poziom nawilżenia jamy ustnej.' },
+  { question: 'Jak działa żel na paskach i czy usuwa plamy?', answer: 'Żel na paskach aktywuje się w kontakcie ze szkliwem, wnikając w mikropory zębów. Skutecznie rozbija cząsteczki barwników pochodzących z kawy, herbaty czy wina, przywracając naturalną biel bez uszkadzania struktury zęba.' },
+  { question: 'Po jakim czasie zauważę pierwsze efekty kuracji?', answer: 'Pierwsze efekty można często dostrzec już po zdjęciu pierwszego lub drugiego paska, gdzie osad jest błyskawicznie usuwany. Docelowy, biały odcień wymaga od 7 do 14 zabiegów.' }
 ];
 
 export default function FAQ() {
@@ -22,7 +22,7 @@ export default function FAQ() {
           </span>
           <h2 className="text-4xl md:text-[56px] font-light mb-6 text-[#1A1A1A] tracking-tight">Najczęstsze wątpliwości.</h2>
           <p className="text-[#737373] max-w-xl mx-auto text-xl font-light">
-            Masz prawo być sceptyczny. Śpieszmy z konkretnymi odpowiedziami, abyś mógł spać spokojnie.
+            Masz prawo być sceptyczny. Śpieszymy z konkretnymi odpowiedziami, abyś mógł uśmiechać się od ucha do ucha.
           </p>
         </div>
 

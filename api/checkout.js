@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       price_data: {
         currency: 'pln',
         product_data: {
-          name: `Sleep Tape - ${item.amount} sztuk (${item.desc})`,
+          name: `GlowSmile - ${item.amount} sztuk (${item.desc})`,
         },
         unit_amount: Math.round(item.price * 100),
       },

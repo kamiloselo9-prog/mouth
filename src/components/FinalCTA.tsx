@@ -16,17 +16,17 @@ export default function FinalCTA() {
             Rozpocznij dzisiaj
           </span>
           <h2 className="text-5xl md:text-[72px] font-light tracking-tight text-white mb-8 leading-[1.05]">
-            Gotowy by w końcu <br/> <span className="font-semibold px-2 text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">odpocząć</span> jak należy?
+            Gotowy by w końcu <br/> <span className="font-semibold px-2 text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">zalśnić</span> uśmiechem jak nigdy dotąd?
           </h2>
           <p className="text-xl text-[#9CA3AF] max-w-2xl mx-auto mb-14 font-light leading-relaxed">
-            Doświadcz głębokiego wpływu nieprzerwanego snu REM i poranków pełnych energii. Dołącz do elitarnej grupy tysięcy budzących się z potężną witalnością.
+            Doświadcz głębokiego oczyszczenia i zauważalnego wybielenia zębów u siebie. Dołącz do elitarnej grupy tysięcy pacjentów z zachwycającym uśmiechem.
           </p>
           
           <button 
             onClick={() => window.location.hash = '#product'}
             className="px-12 py-6 bg-white text-[#1A1A1A] rounded-full text-lg font-bold hover:bg-[#E6E2DA] hover:scale-[1.03] transition-all duration-300 shadow-2xl shadow-white/10 focus:ring-4 focus:ring-white/50 outline-none"
           >
-            Zdobądź Zestaw na 30 Nocy
+            Zdobądź Zestaw Wybielający
           </button>
 
           <p className="mt-8 text-xs text-[#737373] font-medium uppercase tracking-[0.1em]">

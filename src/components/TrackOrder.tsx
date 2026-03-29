@@ -40,7 +40,7 @@ export default function TrackOrder() {
         <h1 className="text-4xl md:text-5xl font-light mb-6">Śledź zamówienie</h1>
         <p className="text-[#737373] text-[15px] leading-relaxed">
           Wprowadź swój numer śledzenia (np. A1B2C3D4) otrzymany w wiadomości e-mail, 
-          aby sprawdzić aktualny status przesyłki Sleep Tape.
+          aby sprawdzić aktualny status przesyłki GlowSmile.
         </p>
       </div>
 

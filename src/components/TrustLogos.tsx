@@ -47,7 +47,7 @@ export default function TrustLogos() {
              <div className="w-14 h-14 rounded-full bg-[#EAE6DF] flex items-center justify-center mb-6 border border-[#E6E2DA] group-hover:bg-[#1A1A1A] group-hover:text-white transition-colors duration-500 text-[#1A1A1A]">
                <ThumbsUp className="w-6 h-6" strokeWidth={1.5} />
              </div>
-             <div className="text-xs uppercase tracking-[0.15em] font-bold mb-2 text-[#1A1A1A]">Gwarancja Snu</div>
+             <div className="text-xs uppercase tracking-[0.15em] font-bold mb-2 text-[#1A1A1A]">Gwarancja Bieli</div>
              <div className="text-sm text-[#737373] font-light max-w-[150px]">Jeśli nie zobaczysz efektu, oddamy kasę.</div>
            </div>
         </div>

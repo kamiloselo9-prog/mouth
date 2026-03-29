@@ -24,7 +24,7 @@ export default function Cart() {
         {items.length === 0 ? (
           <div className="text-center py-20">
             <h2 className="text-3xl font-light mb-4">Twój koszyk jest pusty</h2>
-            <p className="text-[#737373] mb-8">Nie dodano jeszcze żadnych zestawów Sleep Tape.</p>
+            <p className="text-[#737373] mb-8">Nie dodano jeszcze żadnych zestawów GlowSmile.</p>
             <button 
               onClick={() => window.location.hash = '#product'}
               className="px-10 py-4 bg-[#1A1A1A] text-white rounded-full text-sm font-semibold hover:bg-[#2C2C2C] uppercase tracking-widest inline-block"
@@ -41,11 +41,11 @@ export default function Cart() {
                 {items.map((item, index) => (
                   <div key={item.id} className={`p-6 flex flex-col sm:flex-row items-center gap-6 ${index !== items.length - 1 ? 'border-b border-[#EAE6DF]' : ''}`}>
                     <div className="w-24 h-24 bg-[#F7F6F4] rounded-[16px] border border-[#E6E2DA] flex items-center justify-center p-2 flex-shrink-0">
-                      <img src={item.image} alt="Sleep Tape" className="w-full h-full object-cover mix-blend-multiply rounded-lg" />
+                      <img src={item.image} alt="GlowSmile" className="w-full h-full object-cover mix-blend-multiply rounded-lg" />
                     </div>
                     
                     <div className="flex-grow text-center sm:text-left">
-                      <div className="font-bold text-lg text-[#1A1A1A]">Sleep Tape, {item.amount} sztuk</div>
+                      <div className="font-bold text-lg text-[#1A1A1A]">GlowSmile, {item.amount} sztuk</div>
                       <div className="text-[#737373] text-sm mt-1">{item.desc}</div>
                       <div className="font-medium text-[#1A1A1A] text-lg mt-3 sm:hidden">
                         {(item.price * item.quantity).toFixed(2).replace('.', ',')} zł

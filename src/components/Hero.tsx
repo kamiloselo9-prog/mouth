@@ -13,8 +13,8 @@ export default function Hero() {
         {/* Odcięte zdjęcie, lekko rozciągnięte mocniej w lewą stronę zgodnie z prośbą */}
         <div className="absolute top-0 right-0 w-full md:w-[85%] lg:w-[75%] h-full">
           <img 
-            src="/banner.webp"
-            alt="Naturalnie zrelaksowana kobieta rano po przespanej nocy"
+            src="/banner_prawidlowe.webp"
+            alt="Kobieta prezentująca białe zęby po zabiegu kuracji wybielającej"
             className="w-full h-full object-cover object-[30%_center] contrast-[1.05] brightness-[1.03] saturate-[1.05]"
           />
           {/* Biało-kremowy efekt najeżdżający na zdjęcie od lewej (rozmycie/gradient) */}
@@ -37,37 +37,37 @@ export default function Hero() {
           className="max-w-[550px]"
         >
            <span className="inline-block text-[11px] font-bold uppercase tracking-[0.2em] text-[#737373] mb-6">
-             Sprawdzony wybór tysięcy użytkowników
+             Skuteczna redukcja przebarwień
            </span>
 
            <h1 className="text-[52px] md:text-[68px] font-light tracking-tight text-[#1A1A1A] leading-[1.05] mb-6 drop-shadow-sm">
-             Zamknij usta.<br />
-             <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#1A1A1A] to-[#737373]">Otwórz lepszy sen.</span>
+             Naturalna biel.<br />
+             <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#1A1A1A] to-[#737373]">Promienny uśmiech.</span>
            </h1>
            
            <p className="text-xl text-[#1A1A1A]/80 font-light leading-relaxed mb-10 drop-shadow-sm">
-             Prosty nawyk, który pomaga poprawić jakość snu, wspiera naturalne oddychanie i pozwala obudzić się naprawdę wypoczętym.
+             Nowoczesne paski wybielające Guru Nanda. Pomagają wydobyć naturalną biel zębów, działając łagodnie dla szkliwa i bez wizyt w gabinecie.
            </p>
 
            {/* 3 Quick Benefits */}
-           <div className="flex flex-col gap-4 mb-12">
+             <div className="flex flex-col gap-4 mb-12">
              <div className="flex items-center gap-4 text-[#1A1A1A]">
                 <div className="w-6 h-6 rounded-full bg-[#EAE6DF] border border-[#D6CFC4]/50 flex items-center justify-center shadow-sm">
                   <Check className="w-3.5 h-3.5 text-[#1A1A1A]" strokeWidth={2.5} />
                 </div>
-                <span className="font-medium text-[17px] tracking-wide drop-shadow-sm">Komfort przez całą noc</span>
+                <span className="font-medium text-[17px] tracking-wide drop-shadow-sm">Technologia Dry Strip – nie zsuwają się</span>
              </div>
              <div className="flex items-center gap-4 text-[#1A1A1A]">
                 <div className="w-6 h-6 rounded-full bg-[#EAE6DF] border border-[#D6CFC4]/50 flex items-center justify-center shadow-sm">
                   <Check className="w-3.5 h-3.5 text-[#1A1A1A]" strokeWidth={2.5} />
                 </div>
-                <span className="font-medium text-[17px] tracking-wide drop-shadow-sm">Delikatny dla skóry (hipoalergiczny)</span>
+                <span className="font-medium text-[17px] tracking-wide drop-shadow-sm">Delikatne dla wrażliwego szkliwa</span>
              </div>
              <div className="flex items-center gap-4 text-[#1A1A1A]">
                 <div className="w-6 h-6 rounded-full bg-[#EAE6DF] border border-[#D6CFC4]/50 flex items-center justify-center shadow-sm">
                   <Check className="w-3.5 h-3.5 text-[#1A1A1A]" strokeWidth={2.5} />
                 </div>
-                <span className="font-medium text-[17px] tracking-wide drop-shadow-sm">Wspiera naturalne oddychanie nocą</span>
+                <span className="font-medium text-[17px] tracking-wide drop-shadow-sm">Efekty niszczące przebarwienia po kawie</span>
              </div>
            </div>
 
@@ -77,7 +77,7 @@ export default function Hero() {
                onClick={() => window.location.hash = '#product'}
                className="w-full sm:w-auto px-10 py-5 bg-[#1A1A1A] text-white rounded-full text-sm font-semibold hover:bg-[#2C2C2C] hover:scale-[1.03] transition-all duration-500 shadow-xl shadow-[#1A1A1A]/20 uppercase tracking-[0.15em] outline-none"
              >
-               Zacznij spać lepiej
+               Odbierz Swój Zestaw
              </button>
              
              <div className="flex flex-col text-[11px] font-bold text-[#1A1A1A]/70 uppercase tracking-widest gap-2 mt-2 sm:mt-0">

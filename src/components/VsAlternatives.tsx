@@ -3,19 +3,19 @@ import { useRef } from 'react';
 import { Check, Minus } from 'lucide-react';
 
 const sleepTapeFeatures = [
-  "Komfort przez całą noc",
-  "Delikatny dla skóry (hipoalergiczny)",
-  "Utrzymuje się całą noc",
-  "Wspiera naturalne oddychanie",
-  "Lepsza jakość snu i regeneracja"
+  "Szybki i widoczny czas działania",
+  "Delikatny dla szkliwa (bezpieczny)",
+  "Dobrze przylega do powierzchni zębów",
+  "Niszczy osad po kawie, herbacie i winie",
+  "Pełny komfort i dbałość o wrażliwe szkliwo"
 ];
 
 const genericFeatures = [
   "Może powodować dyskomfort",
   "Zależy od materiału",
-  "Często odkleja się w nocy",
-  "Ograniczona przepuszczalność",
-  "Nierówna jakość snu"
+  "Paski ślizgają się pod wpływem śliny",
+  "Nierówne wybielanie plam",
+  "Ograniczona skuteczność"
 ];
 
 export default function VsAlternatives() {
@@ -66,7 +66,7 @@ export default function VsAlternatives() {
 
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 max-w-[1100px] mx-auto items-center lg:items-stretch">
           
-          {/* KARTA LEFT: SLEEP TAPE */}
+          {/* KARTA LEFT: GlowSmile */}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ export default function VsAlternatives() {
             className="flex-1 w-full bg-white p-8 lg:p-12 rounded-[40px] shadow-[0_0_60px_rgba(255,255,255,0.05)] border border-[#E6E2DA] relative z-20 lg:scale-[1.05] hover:scale-[1.07] transition-all duration-700"
           >
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1A1A1A] text-white px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap shadow-xl">
-              Sleep Tape
+              GlowSmile
             </div>
 
             <div className="text-center mb-8 lg:mb-10 mt-2">

@@ -31,8 +31,8 @@ export default function Header({ isHomepage = false }: { isHomepage?: boolean })
       <div className={`max-w-[1400px] mx-auto flex items-center justify-between px-6 transition-all duration-500 ${
         isScrolled ? 'py-4' : 'py-6'
       }`}>
-        <a href="#" className="text-xl font-medium tracking-[0.2em] text-[#1A1A1A] hover:opacity-70 transition-opacity">
-          SLEEP TAPE
+        <a href="#" className="hover:opacity-70 transition-opacity">
+          <img src="/glowsmile-removebg.png" alt="GlowSmile Logo" className="h-16 sm:h-20 object-contain" />
         </a>
         
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#737373]">

@@ -1,21 +1,26 @@
+import { useModal } from "../store/useModal";
+
 export default function Footer() {
+  const { openModal } = useModal();
   return (
     <footer className="w-full bg-[#1A1A1A] text-white py-20 px-6 sm:px-12 ">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-16">
         
-        <div className="col-span-1 md:col-span-4">
-          <div className="text-2xl font-semibold tracking-[0.2em] mb-8 text-white">SLEEP TAPE</div>
+        <div className="col-span-1 md:col-span-3">
+          <div className="mb-8">
+            <img src="/glowsmile-removebg.png" alt="GlowSmile Logo" className="h-32 object-contain brightness-0 invert" />
+          </div>
           <p className="text-[#9CA3AF] text-lg font-light leading-relaxed max-w-sm mb-8">
-            Fundament Twojego każdego dnia zaczyna się w nocy. Zbudowany z pasją w poszukiwaniu idealnej odnowy biologicznej.
+            Pewność siebie zaczyna się od Twojego uśmiechu. Zbudowany z pasją w poszukiwaniu idealnej estetyki i zdrowia.
           </p>
         </div>
 
         <div className="col-span-1 md:col-span-2">
           <h4 className="text-xs uppercase tracking-[0.2em] font-bold mb-8 text-[#737373]">Zakupy</h4>
           <ul className="space-y-5">
-            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 30-dniowy</a></li>
-            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 60-dniowy</a></li>
-            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 90-dniowy (Najlepszy)</a></li>
+            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">1 opakowanie</a></li>
+            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Pakiet 2 + 1 GRATIS</a></li>
+            <li><a href="#product" className="text-base text-[#E6E2DA] hover:text-white transition-colors">Zestaw 3 + 2 GRATIS</a></li>
           </ul>
         </div>
 
@@ -29,9 +34,21 @@ export default function Footer() {
           </ul>
         </div>
 
-        <div className="col-span-1 md:col-span-4">
+        <div className="col-span-1 md:col-span-2">
+          <h4 className="text-xs uppercase tracking-[0.2em] font-bold mb-8 text-[#737373]">Informacje</h4>
+          <ul className="space-y-3">
+            <li><button onClick={() => openModal('search')} className="text-base text-[#E6E2DA] hover:text-white transition-colors text-left w-full">Szukaj</button></li>
+            <li><button onClick={() => openModal('terms')} className="text-base text-[#E6E2DA] hover:text-white transition-colors text-left w-full">Regulamin sklepu</button></li>
+            <li><button onClick={() => openModal('privacy')} className="text-base text-[#E6E2DA] hover:text-white transition-colors text-left w-full">Polityka prywatności</button></li>
+            <li><button onClick={() => openModal('delivery')} className="text-base text-[#E6E2DA] hover:text-white transition-colors text-left w-full">Dostawa i płatności</button></li>
+            <li><button onClick={() => openModal('returns')} className="text-base text-[#E6E2DA] hover:text-white transition-colors text-left w-full">Zwroty i reklamacje</button></li>
+            <li><button onClick={() => openModal('legal')} className="text-base text-[#E6E2DA] hover:text-white transition-colors text-left w-full">Nota prawna</button></li>
+          </ul>
+        </div>
+
+        <div className="col-span-1 md:col-span-3">
           <h4 className="text-xs uppercase tracking-[0.2em] font-bold mb-8 text-[#737373]">Bądź na bieżąco</h4>
-          <p className="text-[#9CA3AF] text-base font-light mb-6">Zapisz się by otrzymywać najnowsze wieści na temat snu, optymalizacji ciała i nowe produkty ekskluzywnie u nas jako pierwszy.</p>
+          <p className="text-[#9CA3AF] text-base font-light mb-6">Zapisz się by otrzymywać najnowsze powiadomienia na temat pielęgnacji uśmiechu i nowe produkty ekskluzywnie u nas jako pierwszy.</p>
           <div className="flex border-b border-[#2D2D2D] pb-3 group relative overflow-hidden">
             <input 
               type="email" 
@@ -47,10 +64,10 @@ export default function Footer() {
       </div>
 
       <div className="max-w-[1400px] mx-auto mt-24 pt-10  flex flex-col md:flex-row justify-between items-center gap-6 text-sm tracking-wider text-[#737373] font-light">
-        <p>© 2026 Sleep Tape. Wszelkie prawa zastrzeżone.</p>
+        <p>© 2026 GlowSmile. Wszelkie prawa zastrzeżone.</p>
         <div className="flex gap-8">
-          <a href="#" className="hover:text-white transition-colors">Polityka Prywatności</a>
-          <a href="#" className="hover:text-white transition-colors">Regulamin Sklepu</a>
+          <button onClick={() => openModal('privacy')} className="hover:text-white transition-colors">Polityka Prywatności</button>
+          <button onClick={() => openModal('terms')} className="hover:text-white transition-colors">Regulamin Sklepu</button>
         </div>
       </div>
     </footer>

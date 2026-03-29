@@ -142,7 +142,7 @@ export default function AdminPanel() {
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold mb-4">Panel administracyjny</h1>
-          <p className="text-[#86868b] text-sm mb-10">Wprowadź hasło dostępu, aby zarządzać zamówieniami Sleep Tape.</p>
+          <p className="text-[#86868b] text-sm mb-10">Wprowadź hasło dostępu, aby zarządzać zamówieniami GlowSmile.</p>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
@@ -282,7 +282,10 @@ export default function AdminPanel() {
       {/* Main Header */}
       <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-40 border-b border-[#F0F0F0] px-8 py-4">
         <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-           <div className="text-xl font-bold tracking-[0.2em] select-none">SLEEP TAPE <span className="text-[9px] bg-[#1A1A1A] text-white px-2 py-0.5 rounded ml-1 align-top uppercase">ADMIN</span></div>
+           <div className="flex items-center gap-2 select-none">
+             <img src="/glowsmile-removebg.png" alt="GlowSmile Logo" className="h-24 object-contain" />
+             <span className="text-xs bg-[#1A1A1A] text-white px-2 py-0.5 rounded align-top uppercase">ADMIN</span>
+           </div>
            
            <div className="flex items-center gap-6">
               <div className="flex bg-[#F0F0F2] p-1 rounded-xl">

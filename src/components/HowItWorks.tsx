@@ -20,7 +20,7 @@ export default function HowItWorks() {
           <div className="aspect-[4/5] w-full bg-[#111827] rounded-[40px] overflow-hidden relative shadow-2xl shadow-[#1A1A1A]/10 border border-[#E6E2DA] z-10">
             <img 
               src="/mouth4.png" 
-              alt="Spokojna sypialnia premium" 
+              alt="Atrakcyjna osoba z pięknym, białym uśmiechem" 
               className="w-full h-full object-cover opacity-90 transition-transform duration-[10s] hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/60 via-transparent to-transparent pointer-events-none"></div>
@@ -33,7 +33,7 @@ export default function HowItWorks() {
               className="absolute bottom-10 left-10 right-10 backdrop-blur-md bg-white/10 p-6 rounded-3xl border border-white/20"
             >
                <p className="text-white font-medium text-xl leading-snug">
-                 "3 sekundy przed snem, ułamek poranka. Efekt odczuwasz przez cały dzień."
+                 "Już po pierwszym użyciu zauważysz pozytywne efekty. Pełna kuracja dla promiennej bieli."
                </p>
             </motion.div>
           </div>
@@ -48,10 +48,10 @@ export default function HowItWorks() {
           className="flex-1 w-full"
         >
           <span className="inline-block px-4 py-1.5 bg-[#EAE6DF] text-[#1A1A1A] rounded-full text-[10px] uppercase font-bold tracking-widest mb-6 border border-[#E6E2DA]">
-            Rytuał zasypiania
+            Prosty Zabieg
           </span>
           <h2 className="text-4xl md:text-[56px] font-light mb-12 text-[#1A1A1A] tracking-tight leading-[1.1]">
-            Prostota jest <br />najwyższą formą luksusu.
+            Jak to działa? <br />Wybielanie w 3 krokach.
           </h2>
           
           <div className="space-y-14 relative">
@@ -59,9 +59,9 @@ export default function HowItWorks() {
             <div className="absolute left-4 top-4 bottom-10 w-[1px] bg-gradient-to-b from-[#E6E2DA] via-[#E6E2DA] to-transparent"></div>
 
             {[
-              { step: '01', title: 'Przygotuj płótno', text: 'Oczyść i osusz skórę wokół ust. Upewnij się, że nie ma na niej silnych kremów, by zagwarantować perfekcyjne, bezpieczne przyleganie na całą noc.' },
-              { step: '02', title: 'Aplikuj z uważnością', text: 'Delikatnie odklej taśmę. Złącz usta w naturalny sposób i nałóż ją poziomo. Nasz porowaty materiał od razu zaczyna oddychać razem z Tobą.' },
-              { step: '03', title: 'Zanurz się w sen', text: 'Podczas zasypiania, Twoje ciało kotwiczy się w oddechu przez nos, co natychmiastowo aktywuje układ przywspółczulny, wyciszając umysł.' }
+              { step: '01', title: 'Nałóż pasek', text: 'Wyjmij pasek i nałóż go na powierzchnię zębów po obu stronach łuków i upewnij się, że przylega idealnie.' },
+              { step: '02', title: 'Dociśnij, aby dopasować', text: 'Delikatnie dociśnij do szkliwa. Technologia dry strip zapobiega przesuwaniu i ślizganiu się pasków pod wpływem śliny.' },
+              { step: '03', title: 'Odczekaj i zdejmij', text: 'Odczekaj około 30 minut relaksując się na kanapie, następnie po prostu zdejmij paski i dla lepszego komfortu wypłucz jamę ustną z resztek.' }
             ].map((item, i) => (
               <div key={i} className="flex gap-10 group relative z-10">
                 <div className="w-8 h-8 rounded-full bg-white border border-[#E6E2DA] shadow-sm flex items-center justify-center text-xs font-bold text-[#737373] group-hover:border-[#1A1A1A] group-hover:text-[#1A1A1A] transition-all bg-white relative z-20">

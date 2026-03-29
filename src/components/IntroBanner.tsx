@@ -18,7 +18,7 @@ export default function IntroBanner() {
       <div className="absolute inset-0 w-full h-full">
         <img 
           src="/mouth.png" 
-          alt="Świeżość poranka i wyspana osoba" 
+          alt="Piękny, lśniący uśmiech z białymi zębami" 
           className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/80 via-[#1A1A1A]/40 to-[#1A1A1A]/10"></div>
@@ -43,7 +43,7 @@ export default function IntroBanner() {
             <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white to-[#D6CFC4]">Każdego dnia.</span>
           </h1>
           <p className="text-xl md:text-2xl text-[#E6E2DA] max-w-2xl mx-auto mb-14 font-light leading-relaxed drop-shadow-md">
-            Prosty nawyk, który pomaga zadbać o spokojniejszy sen i komfort nocnego oddychania.
+            Prosty zabieg, który pomaga zadbać o zdrowy wygląd zębów i promienny uśmiech każdego dnia.
           </p>
           
           <button 

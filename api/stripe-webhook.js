@@ -112,7 +112,7 @@ export default async function handler(req, res) {
 
       // --- DISCORD LOGIC ---
       const embed = {
-        title: "🛒 Nowe zamówienie – Sleep Tape",
+        title: "🛒 Nowe zamówienie – GlowSmile",
         color: 0x1A1A1A,
         fields: [
           { name: "Klient", value: `${metadata.first_name || ''} ${metadata.last_name || ''}`.trim() || 'Brak', inline: true },
@@ -148,7 +148,7 @@ export default async function handler(req, res) {
 
 async function sendConfirmationEmail(order, host) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const fromAddress = 'Sleep Tape <zamowienia@sleepfix.pl>';
+  const fromAddress = 'GlowSmile <zamowienia@glowsmile.pl>';
   
   console.log('[RESEND] --- Email Sending Step Started ---');
   console.log('[RESEND] API Key exists:', !!resendApiKey);
@@ -164,7 +164,7 @@ async function sendConfirmationEmail(order, host) {
     const { Resend } = await import('resend');
     const resend = new Resend(resendApiKey);
 
-    const baseUrl = host ? `https://${host}` : 'https://sleepfix.pl';
+    const baseUrl = host ? `https://${host}` : 'https://glowsmile.pl';
     const trackUrl = order.deliveryMethod === 'Paczkomat InPost' 
       ? `https://inpost.pl/sledzenie-przesylek?number=${order.trackingNumber}`
       : `${baseUrl}/#track`;
@@ -175,7 +175,7 @@ async function sendConfirmationEmail(order, host) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dziękujemy za zamówienie – Sleep Tape</title>
+  <title>Dziękujemy za zamówienie – GlowSmile</title>
   <style>
     body { background-color: #ffffff; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     .container { max-width: 520px; margin: 0 auto; padding: 60px 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -210,7 +210,7 @@ async function sendConfirmationEmail(order, host) {
 </head>
 <body>
   <div class="container">
-    <div class="logo">Sleep Tape</div>
+    <div class="logo">GlowSmile</div>
     <div class="header-sub">Dziękujemy za Twoje zamówienie</div>
 
     <h1 class="title">Twoje zamówienie zostało potwierdzone</h1>
@@ -254,7 +254,7 @@ async function sendConfirmationEmail(order, host) {
 
     <div class="footer">
       <p class="footer-text">Masz pytania? Odpowiedz na tego maila – chętnie pomożemy. Przyjemnej regeneracji!</p>
-      <div class="signature">Zespół Sleep Tape</div>
+      <div class="signature">Zespół GlowSmile</div>
     </div>
   </div>
 </body>
@@ -265,7 +265,7 @@ async function sendConfirmationEmail(order, host) {
     const result = await resend.emails.send({
       from: fromAddress,
       to: [order.email],
-      subject: 'Dziękujemy za zamówienie – Sleep Tape',
+      subject: 'Dziękujemy za zamówienie – GlowSmile',
       html: html,
     });
 

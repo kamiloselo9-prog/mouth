@@ -140,7 +140,7 @@ export default function CheckoutSuccess() {
       </div>
       
       <p className="mt-8 text-center text-[#A3A3A3] text-xs font-medium uppercase tracking-widest">
-        Dziękujemy za zaufanie w Sleep Tape
+        Dziękujemy za zaufanie w GlowSmile
       </p>
     </div>
   );
