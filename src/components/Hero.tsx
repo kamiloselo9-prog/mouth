@@ -40,7 +40,7 @@ export default function Hero() {
              Skuteczna redukcja przebarwień
            </span>
 
-           <h1 className="text-[52px] md:text-[68px] font-light tracking-tight text-[#1A1A1A] leading-[1.05] mb-6 drop-shadow-sm">
+           <h1 className="text-[40px] md:text-[68px] font-light tracking-tight text-[#1A1A1A] leading-[1.05] mb-6 drop-shadow-sm">
              Naturalna biel.<br />
              <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#1A1A1A] to-[#737373]">Promienny uśmiech.</span>
            </h1>

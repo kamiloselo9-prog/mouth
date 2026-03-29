@@ -12,9 +12,9 @@ const images = [
 ];
 
 const packages = [
-  { id: 1, amount: 14, desc: "1 opakowanie (14 zabiegów)", price: "59,90", originalPrice: "79,90", unitPrice: "59,90 zł / opak.", popular: false, best: false },
-  { id: 2, amount: 42, desc: "2 + 1 GRATIS (42 zabiegi)", price: "119,80", originalPrice: "179,70", unitPrice: "39,93 zł / opak.", popular: true, best: false },
-  { id: 3, amount: 70, desc: "3 + 2 GRATIS (70 zabiegów)", price: "179,70", originalPrice: "299,50", unitPrice: "35,94 zł / opak.", popular: false, best: true },
+  { id: 1, amount: 14, desc: "1 opakowanie (14 zabiegów)", price: "49,00", originalPrice: "79,90", unitPrice: "49,00 zł / opak.", popular: false, best: false },
+  { id: 2, amount: 42, desc: "2 + 1 GRATIS (42 zabiegi)", price: "98,00", originalPrice: "147,00", unitPrice: "32,67 zł / opak.", popular: true, best: false },
+  { id: 3, amount: 70, desc: "3 + 2 GRATIS (70 zabiegów)", price: "147,00", originalPrice: "245,00", unitPrice: "29,40 zł / opak.", popular: false, best: true },
 ];
 
 export default function ProductDetails() {
@@ -98,9 +98,9 @@ export default function ProductDetails() {
               <span className="text-[22px] text-[#A3A3A3] line-through font-light decoration-1 pb-1">{selectedPack.originalPrice} zł</span>
             </div>
 
-            <div className="mb-8 -mt-4">
-              <span className="text-[#1A1A1A] text-sm font-bold uppercase tracking-[0.1em] underline decoration-[#1A1A1A] decoration-2 underline-offset-8">
-                + Darmowa dostawa
+            <div className={`mb-8 -mt-4 transition-all duration-300 ${selectedPack.amount <= 14 ? 'opacity-70' : 'opacity-100'}`}>
+              <span className={`text-[#1A1A1A] text-sm font-bold uppercase tracking-[0.1em] ${selectedPack.amount > 14 ? 'underline decoration-[#1A1A1A] decoration-2 underline-offset-8' : ''}`}>
+                {selectedPack.amount <= 14 ? '+ Dostawa: 14,90 zł' : '+ Darmowa dostawa'}
               </span>
             </div>
 
@@ -168,7 +168,7 @@ export default function ProductDetails() {
             <div className="flex flex-wrap items-center justify-between gap-y-6 gap-x-4 pt-8 border-t border-[#EAE6DF]">
               <div className="flex items-center gap-3 text-[11px] lg:text-xs font-bold uppercase tracking-widest text-[#1A1A1A]">
                 <Truck className="w-5 h-5 text-[#1A1A1A]" strokeWidth={1.5} />
-                <span className="underline decoration-2 underline-offset-4">Darmowa dostawa</span>
+                <span className="underline decoration-2 underline-offset-4">Błyskawiczna wysyłka</span>
               </div>
               <div className="flex items-center gap-3 text-[11px] lg:text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/80">
                 <ShieldCheck className="w-5 h-5 text-[#1A1A1A]" strokeWidth={1.5} />

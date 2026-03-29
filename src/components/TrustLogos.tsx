@@ -8,9 +8,9 @@ export default function TrustLogos() {
         {/* Partner Logos placeholder */}
         <div className="flex flex-col items-center">
           <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#737373] mb-10">Zaufali nam eksperci i sportowcy powiązani z:</p>
-          <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-24 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
             {["VOGUE", "GQ", "FORBES", "WIRED", "WHOOP"].map((logo, i) => (
-               <div key={i} className="text-xl md:text-3xl font-bold tracking-[0.4em] text-[#1A1A1A] select-none pointer-events-none">
+               <div key={i} className="text-lg md:text-3xl font-bold tracking-[0.2em] md:tracking-[0.4em] text-[#1A1A1A] select-none pointer-events-none">
                  {logo}
                </div>
             ))}

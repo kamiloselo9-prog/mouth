@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '../store/useCart';
-import { motion, useScroll } from 'framer-motion';
+import { motion, useScroll, AnimatePresence } from 'framer-motion';
 import PromoBanner from './PromoBanner';
 
 export default function Header({ isHomepage = false }: { isHomepage?: boolean }) {
@@ -62,13 +62,42 @@ export default function Header({ isHomepage = false }: { isHomepage?: boolean })
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-[#1A1A1A]"
+            className="md:hidden text-[#1A1A1A] z-50 relative p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: '100vh' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 bg-white z-40 md:hidden pt-32 px-6 overflow-hidden flex flex-col"
+          >
+            <nav className="flex flex-col gap-8 text-2xl font-light text-[#1A1A1A] mb-12">
+              <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#737373] transition-colors">Jak to działa</a>
+              <a href="#benefits" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#737373] transition-colors">Korzyści</a>
+              <a href="#reviews" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#737373] transition-colors">Opinie</a>
+              <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#737373] transition-colors">FAQ</a>
+            </nav>
+            <button 
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                window.location.hash = '#product';
+              }}
+              className="w-full py-5 bg-[#1A1A1A] text-white rounded-full text-sm font-semibold uppercase tracking-widest shadow-xl"
+            >
+              Zamów teraz
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
